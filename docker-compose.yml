@@ -4,7 +4,7 @@ services:
   backend:
     build: ./backend
     volumes:
-      - ./backend:/usr/local/service
+      - ./backend:/app
     #command: [ "sh", "-c", "cd /usr/local/service && gradle bootRun --no-daemon" ]
     ports:
       - "8080:8080"
@@ -12,9 +12,9 @@ services:
   frontend:
     build: ./frontend
     volumes:
-    - ./frontend:/usr/local/service
+    - ./frontend:/app
     ports:
       - "3000:3000"
-    command: [ "sh", "-c", "cd /usr/local/service && npm install && npm run dev -- --host"]
+    command: [ "sh", "-c", "cd /app && npm install && npm run dev -- --host"]
     depends_on:
       - backend
