@@ -1,4 +1,4 @@
-name: digitovsky
+name: randomChess
 
 services:
   backend:
