@@ -1,0 +1,40 @@
+name: digitovsky
+
+services:
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend:/usr/local/service
+    #command: [ "sh", "-c", "cd /usr/local/service && gradle bootRun --no-daemon" ]
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    environment:
+      #SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/digitovsky
+      #SPRING_DATASOURCE_USERNAME: root
+      #SPRING_DATASOURCE_PASSWORD: root
+
+  database:
+    image: "mysql:latest"
+    restart: always
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: root
+
+    ports:
+      - "3306:3306"
+    volumes:
+      - type: bind
+        source: ./database/sql
+        target: /docker-entrypoint-initdb.d/
+
+  frontend:
+    build: ./frontend
+    volumes:
+    - ./frontend:/usr/local/service
+    ports:
+      - "3000:3000"
+    command: [ "sh", "-c", "cd /usr/local/service && npm install && npm run dev -- --host"]
+    depends_on:
+      - backend
