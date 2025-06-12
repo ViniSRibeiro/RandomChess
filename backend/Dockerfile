@@ -4,5 +4,3 @@ WORKDIR /app
 
 RUN apk update && apk upgrade
 RUN apk add sqlite
-
-CMD [ "./server" ]
