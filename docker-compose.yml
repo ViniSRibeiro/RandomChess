@@ -5,7 +5,7 @@ services:
     build: ./backend
     volumes:
       - ./backend:/app
-    #command: [ "sh", "-c", "cd /usr/local/service && gradle bootRun --no-daemon" ]
+    command: [ "sh", "-c", "go mod tidy && go build -v -o server && ./server" ]
     ports:
       - "8080:8080"
 
