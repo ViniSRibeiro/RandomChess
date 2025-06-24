@@ -1,25 +1,22 @@
 create table if not exists Usuario (
-    nome text not null, 
+    nome text not null,
     senha text not null,
-    vitorias integer,
-    partidas integer,
+    vitorias integer not null default 0,
+    partidas integer not null default 0,
     primary key (nome)
-) ;
+);
 
 create table if not exists Jogo (
-    id integer primary key,
+    id integer not null,
     jogador1 text not null,
     jogador2 text not null,
 
-    tabuleiro integer not null,
+    tabuleiro TEXT not null,
 
-    ganhador text not null, 
+    ganhador TEXT not null,
 
-    foreing key (jogador1) references Usuario (nome),
-    foreing key (jogador2) references Usuario (nome),
-    foreing key (ganhador) references Usuario (nome),
-)
-
-create table if not exists Tabuleiro(
-
-)
+    primary key (id),
+    foreign key (jogador1) references Usuario (nome),
+    foreign key (jogador2) references Usuario (nome),
+    foreign key (ganhador) references Usuario (nome)
+);
