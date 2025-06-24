@@ -1,0 +1,26 @@
+.container {
+  /* TODO: ver se tem como encapsular */
+  background-color: #1d1e23;
+  color: white;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.link {
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+}
+
+.link:hover {
+  text-decoration: none;
+  color: #aaaaaa;
+}
+
+
+
+
