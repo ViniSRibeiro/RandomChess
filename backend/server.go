@@ -8,16 +8,20 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 type server struct {
-	db *sql.DB
+	db       *sql.DB
+	sessions map[string]string
 }
 
 func initServer() server {
 	var s server
 	s.db = initDB()
+	s.sessions = make(map[string]string)
+
 	return s
 }
 
@@ -50,6 +54,12 @@ func jsonMsg(msg string) string {
 	data := map[string]string{"mensagem": msg}
 	res, _ := json.Marshal(data)
 	return string(res)
+}
+
+func jsonToken(msg string) []byte {
+	data := map[string]string{"token": msg}
+	res, _ := json.Marshal(data)
+	return res
 }
 
 func (s *server) cadastro(w http.ResponseWriter, r *http.Request) {
@@ -91,28 +101,41 @@ func (s *server) cadastro(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) login(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Metodo não permitido", http.StatusMethodNotAllowed)
+		http.Error(w, jsonMsg("Metodo não permitido"), http.StatusMethodNotAllowed)
 	}
 
 	err := r.ParseForm()
 	if err != nil {
-		http.Error(w, "Falha no parse do form", http.StatusInternalServerError)
+		http.Error(w, jsonMsg("Usuário e senha vazios"), http.StatusInternalServerError)
 		return
 	}
 
 	nome := r.PostForm.Get("nome")
 	senha := r.PostForm.Get("senha")
 	if nome == "" || senha == "" {
-		http.Error(w, "Usuário e senha vazios", http.StatusBadRequest)
+		http.Error(w, jsonMsg("Usuário e senha vazios"), http.StatusBadRequest)
 		return
 	}
 
 	res, err := s.db.Query("SELECT * FROM Usuario WHERE nome = ? AND senha = ?", nome, senha)
-	if err == sql.ErrNoRows || res.Next() {
+	if err == sql.ErrNoRows || !res.Next() {
 		log.Printf("[!] Usuário ou senha errados")
-		http.Error(w, "Usuario ou senha errados", http.StatusConflict)
+		http.Error(w, jsonMsg("Usuario ou senha errados"), http.StatusConflict)
+		return
 	}
+	token := uuid.New().String()
+	s.sessions[token] = nome
+
+	w.Write(jsonToken(token))
+	log.Printf("Logou, token: %s\n", token)
+}
+
+func ok(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
+}
+
+func error(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, jsonMsg("Zorza Cabeça de melão"), http.StatusBadRequest)
 }
 
 func main() {
@@ -121,5 +144,7 @@ func main() {
 
 	http.HandleFunc("/cadastro", s.cadastro)
 	http.HandleFunc("/login", s.login)
+	http.HandleFunc("/ok", ok)
+	http.HandleFunc("/error", error)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
