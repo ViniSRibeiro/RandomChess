@@ -1,0 +1,9 @@
+{
+    "update": 1,
+    "lance" : ["e3", "f4"],
+    "possibilidades": {
+        "e4": ["e2", "e5", "d5"]
+    },
+    "round": "white/black",
+    "won": "checkmate/time/N/A"
+}

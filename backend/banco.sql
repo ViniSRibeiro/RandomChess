@@ -11,15 +11,11 @@ create table if not exists Jogo (
     jogador1 text not null,
     jogador2 text not null,
 
-    tabuleiro integer not null,
+    tabuleiro TEXT not null,
 
-    ganhador text not null, 
+    ganhador TEXT not null, 
 
     foreing key (jogador1) references Usuario (nome),
     foreing key (jogador2) references Usuario (nome),
     foreing key (ganhador) references Usuario (nome),
-)
-
-create table if not exists Tabuleiro(
-
 )
