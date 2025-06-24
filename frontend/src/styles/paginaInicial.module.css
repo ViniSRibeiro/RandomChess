@@ -1,11 +1,12 @@
-import React from "react"
-
-const PaginaInicial = () => {
-  return (
-    <div>
-      <h1>PaginaInicial</h1>
-    </div>
-  )
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-export default PaginaInicial
+.title {
+  font-size: 60px;
+  color: #52b97d;
+}
+

@@ -1,7 +1,7 @@
 import React from "react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import styles from '../styles/cadastro.module.css'
+import styles from '../styles/login.module.css'
 
 const url_back = process.env.REACT_APP_BACKEND_URL
 

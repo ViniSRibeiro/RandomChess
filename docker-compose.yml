@@ -5,7 +5,7 @@ services:
     build: ./backend
     volumes:
       - ./backend:/app
-    command: [ "sh", "-c", "go mod tidy && go build -v -o server && ./server" ]
+    command: [ "sh", "-c", "go mod tidy && CGO_ENABLED=1 go build -v -o server && ./server" ]
     ports:
       - "8080:8080"
 

@@ -13,12 +13,9 @@ const Cadastro = () => {
 
   const submit = (e) => {
     e.preventDefault()
-    navigate("/login");
-    return
-    fetch(url_back + `/cadastrar`)
+    fetch(url_back + `/ok`)
       .then((data) => {
         console.log(data)
-        return data.json()
       })
       .then((resp) => {
         navigate("/login");
