@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 const Header = () => {
   return (
     <div className={styles.container}>
-      <h1>RandomChess</h1>
+      <Link className={styles.title} to="/">RandomChess</Link>
       <div className={styles.container}>
         <Link className={styles.link} to="/partida">Novo jogo</Link>
         <Link className={styles.link} to="/cadastro">Cadastro</Link>
