@@ -2,9 +2,11 @@ package main
 
 import (
 	"database/sql"
-	"os"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -44,9 +46,16 @@ func initDB() *sql.DB {
 
 // -----------------------------------------------------------------------------
 
+func jsonMsg(msg string) string {
+	data := map[string]string{ "mensagem" : msg }
+	res, _ := json.Marshal(data)
+	return string(res)
+}
+
 func (s *server) cadastro(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
+		http.Error(w, jsonMsg("Use o método POST"), http.StatusMethodNotAllowed)
 		return
 	}
 	// O nome e a senha são dadas via um formulário HTML
@@ -54,23 +63,27 @@ func (s *server) cadastro(w http.ResponseWriter, r *http.Request) {
 	nome := r.PostForm.Get("nome")
 	senha := r.PostForm.Get("senha")
 	if nome == "" || senha == "" {
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, jsonMsg("Dados inválidos"), http.StatusBadRequest)
 		return
 	}
+
 	// O usuário já existe? Retornamos um código de erro nesse caso
-	res := s.db.QueryRow("SELECT nome FROM Usuario WHERE nome = ?", nome)
-	if res.Err() != nil {
-		// Usuário já existe no banco de dados
-		log.Printf("Usuário %s já existe\n", nome)
-		w.WriteHeader(http.StatusConflict)
+	rows, _ := s.db.Query("SELECT nome FROM Usuario WHERE nome = ?", nome)
+	if rows.Next() {
+		// Usuário já existe no banco de dados (erro: 409)
+		msg := fmt.Sprintf("Usuário %s já existe", nome)
+		http.Error(w, jsonMsg(msg), http.StatusConflict)
+		log.Println(msg)
 		return
 	}
+
 	// Usuário ainda não existe; escrevemos seus dados no banco
 	log.Printf("Criando usuário %s\n", nome)
 	_, err := s.db.Exec("INSERT INTO Usuario (nome, senha) VALUES (?, ?)", nome, senha)
 	if err != nil {
-		log.Printf("[!] Algo deu errado no cadastro de %s\n", nome)
-		w.WriteHeader(http.StatusInternalServerError)
+		msg := fmt.Sprintf("Algo deu errado no cadastro de %s", nome)
+		http.Error(w, jsonMsg(msg), http.StatusInternalServerError)
+		log.Println(msg)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
