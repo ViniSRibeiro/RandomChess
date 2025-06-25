@@ -1,26 +1,51 @@
 import logo from './logo.svg';
 import './App.css';
-import Chessboard from './components/chess';
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
+// Paginas
+import Login from './pages/login';
+import Cadastro from './pages/cadastro';
+import Perfil from './pages/perfil';
+
+import PaginaInicial from './pages/paginaInicial';
+import Partida from './pages/partida';
+import Resultados from './pages/resultados';
+
+import Config from './pages/config'
+import Header from './components/header';
+
+import { AuthProvider } from './components/auth';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> aaaa and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <Chessboard />
-      </header>
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+
+        <Header />
+        <Routes>
+          <Route path="/"
+            element={<PaginaInicial />} />
+
+          <Route path="/login"
+            element={<Login />} />
+          <Route path="/cadastro"
+            element={<Cadastro />} />
+          <Route path="/perfil"
+            element={<Perfil />} />
+
+          <Route path="/partida"
+            element={<Partida />} />
+          <Route path="/resultados"
+            element={<Resultados />} />
+          <Route path="/config"
+            element={<Config />} />
+
+          {/*Exemplo para privar as rotas no futuro*/}
+          {/* <Route path="/admin/usuarios" */}
+          {/*   element={<PrivateRoute allowedRoles={["admin"]}> <AdminUsuarios /> </PrivateRoute>} /> */}
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

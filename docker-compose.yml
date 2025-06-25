@@ -1,11 +1,11 @@
-name: randomChess
+name: randomchess
 
 services:
   backend:
     build: ./backend
     volumes:
       - ./backend:/app
-    command: [ "sh", "-c", "go mod tidy && go build -v -o server && ./server" ]
+    command: [ "sh", "-c", "go mod tidy && CGO_ENABLED=1 go build -v -o server && ./server" ]
     ports:
       - "8080:8080"
 
@@ -15,7 +15,6 @@ services:
     - ./frontend:/app
     ports:
       - "3000:3000"
-    # command: [ "sh", "-c", "cd /app && npm install && npm run dev -- --host"]
     command: [ "sh", "-c", "cd /app && npm install && npm start"]
     depends_on:
       - backend

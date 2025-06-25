@@ -31,3 +31,6 @@ go.work.sum
 
 # Editor/IDE
 .vscode/
+
+# Banco de dados
+app.db
