@@ -15,6 +15,7 @@ import Header from './components/header';
 
 import { AuthProvider } from './components/auth';
 import Jogo from './pages/jogo';
+import Ws from './pages/ws';
 
 function App() {
   return (
@@ -42,6 +43,10 @@ function App() {
 
           <Route path="/jogo"
             element={<Jogo />} />
+
+          <Route path="/ws"
+            element={<Ws />} />
+
           {/*Exemplo para privar as rotas no futuro*/}
           {/* <Route path="/admin/usuarios" */}
           {/*   element={<PrivateRoute allowedRoles={["admin"]}> <AdminUsuarios /> </PrivateRoute>} /> */}
