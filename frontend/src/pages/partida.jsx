@@ -1,5 +1,5 @@
 import React from "react"
-import { Chessboard } from "react-chessboard"
+// import ChessTeste from "../components/chess"
 
 const url_back = process.env.REACT_APP_BACKEND_URL
 
@@ -19,7 +19,7 @@ const Partida = () => {
   return (
     <div>
       <h1>Partida</h1>
-      <Chessboard />
+      {/* <ChessTeste /> */}
     </div>
   )
 }

@@ -18,7 +18,7 @@ const Cadastro = () => {
       "senha": senha
     }
     console.log(data)
-    fetch(url_back + `/cadastro`, {
+    fetch("http://localhost:8080/cadastro", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -26,8 +26,11 @@ const Cadastro = () => {
       body: JSON.stringify(data),
     })
       .then((response) => {
+        console.log(JSON.stringify(response))
+        if (response.ok) {
+          alert("FUNCIONOU");
+        }
         console.log(response)
-
       })
       .then((responseData) => {
         alert(JSON.stringify(responseData));
