@@ -64,26 +64,14 @@ func initDB() *sql.DB {
 // -----------------------------------------------------------------------------
 
 func (s *Server) random(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	if r.Method != http.MethodGet {
 		http.Error(w, jsonMsg("Metodo não permitido"), http.StatusMethodNotAllowed)
 	}
 	var valor float64
 	switch s.randomness {
 	case RD_bitcoin:
-		res, err := http.Get("http://cointradermonitor.com/api/pbb/v1/ticker")
-		if err != nil {
-			log.Fatalf("[!] Erro ao fazer a requisição HTTP: %s", err)
-		}
-		body, err := io.ReadAll(res.Body)
-		if err != nil {
-			log.Fatalf("Erro ao ler o corpo da resposta: %s", err)
-		}
-
-		var tickerData ticker
-		if err := json.Unmarshal(body, &tickerData); err != nil {
-			log.Fatalf("Erro ao decodificar o JSON: %s", err)
-		}
-		valor = tickerData.Last
+		valor = getBtcData()
 	case RD_standart:
 		valor = rand.Float64()
 	}
@@ -120,4 +108,21 @@ func jsonRandom(num float64) []byte {
 	data := map[string]float64{"token": num}
 	res, _ := json.Marshal(data)
 	return res
+}
+
+func getBtcData() float64 {
+	res, err := http.Get("http://cointradermonitor.com/api/pbb/v1/ticker")
+	if err != nil {
+		log.Fatalf("[!] Erro ao fazer a requisição HTTP: %s", err)
+	}
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Fatalf("Erro ao ler o corpo da resposta: %s", err)
+	}
+
+	var tickerData ticker
+	if err := json.Unmarshal(body, &tickerData); err != nil {
+		log.Fatalf("Erro ao decodificar o JSON: %s", err)
+	}
+	return tickerData.Last
 }
