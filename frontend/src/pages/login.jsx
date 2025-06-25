@@ -13,13 +13,24 @@ const Login = () => {
 
   const submit = (e) => {
     e.preventDefault()
-    fetch(url_back + `/cadastrar`)
-      .then((data) => {
-        console.log(data)
-        return data.json()
+    const data = {
+      "nome": nome,
+      "senha": senha
+    }
+
+    fetch(url_back + `/login`, {
+      method: 'POST',
+      body: data,
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.mensagem || "Erro ao cadastrar usuário.");
+        }
+        return response.json();
       })
-      .then((resp) => {
-        router.push("/login");
+      .then(() => {
+        console.log("login feito com sucesso")
       })
       .catch((error) => console.log(error))
   }
