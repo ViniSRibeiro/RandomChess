@@ -83,8 +83,15 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close()
 
 	var valor float64
+	switch s.randomness {
+	case RD_bitcoin:
+		valor = getBtcData()
+	case RD_standart:
+		valor = rand.Float64()
+	}
+
 	var variacao float64
-	valor_antigo := 0.0
+	valor_antigo := valor
 	for {
 		time.Sleep(1 * time.Second)
 		switch s.randomness {
@@ -131,6 +138,8 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 	// esperando por um jogo
 	if len(s.waitingForGame) == 0 {
 		s.waitingForGame = append(s.waitingForGame, token)
+		// faz um loop esperando uma conexão respondendo um
+		// "aguarde"
 		w.WriteHeader(http.StatusOK)
 		return
 	}
