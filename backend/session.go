@@ -6,8 +6,8 @@ type Session struct {
 	gameId      int
 }
 
-func InitSession(nome string) Session {
-	return Session{
+func InitSession(nome string) *Session {
+	return &Session{
 		nomeUsuario: nome,
 		gameId:  -1, // começa sem estar em nenhum jogo
 	}

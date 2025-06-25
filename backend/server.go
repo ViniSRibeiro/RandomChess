@@ -21,20 +21,21 @@ const (
 )
 
 type Server struct {
-	db         *sql.DB
-	sessions   map[string]Session // chaves são tokens
-	userTokens map[string]string  // chaves são nomes de usuário
-	randomness randomness
-	games      []chess.Game
+	db             *sql.DB
+	sessions       map[string]*Session // chaves são tokens
+	userTokens     map[string]string   // chaves são nomes de usuário
+	waitingForGame []string            // fila de usuários aguardando jogo
+	randomness     randomness
+	games          []*chess.Game
 }
 
 func initServer() Server {
 	return Server{
 		db:         initDB(),
-		sessions:   make(map[string]Session),
+		sessions:   make(map[string]*Session),
 		userTokens: make(map[string]string),
 		randomness: RD_bitcoin,
-		games:      make([]chess.Game, 0),
+		games:      make([]*chess.Game, 0),
 	}
 }
 
@@ -88,6 +89,49 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 		valor = rand.Float64()
 	}
 	w.Write(jsonRandom(valor))
+}
+
+func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		http.Error(w, jsonMsg("Metodo não permitido"), http.StatusMethodNotAllowed)
+	}
+	// Antes de mais nada, validamos o pedido recebido
+	headers := r.Header
+	token := headers.Get("Authorization")
+	if token != "" {
+		http.Error(w, jsonMsg("Faltou o campo Authorization"), http.StatusBadRequest)
+		return
+	}
+	_, validToken := s.sessions[token]
+	if !validToken {
+		http.Error(w, jsonMsg("Token inválido"), http.StatusBadRequest)
+		return
+	}
+
+	// Verificamos se já existe alguém na fila. Se já existir, podemos
+	// simplesmente montar o novo jogo entre essas duas pessoas
+	// Adicionamos o usuário na fila, caso não haja mais ninguém na fila
+	// esperando por um jogo
+	if len(s.waitingForGame) == 0 {
+		s.waitingForGame = append(s.waitingForGame, token)
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	otherToken := s.waitingForGame[0]
+	s.waitingForGame = s.waitingForGame[1:]
+
+	gameId := len(s.games)
+	s.games = append(s.games, chess.NewGame())
+
+	s.sessions[token].gameId = gameId
+	s.sessions[otherToken].gameId = gameId
+	w.WriteHeader(http.StatusOK)
 }
 
 // -----------------------------------------------------------------------------

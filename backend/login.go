@@ -16,7 +16,6 @@ import (
 
 func (s *Server) cadastro(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
 		http.Error(w, jsonMsg("Use o método POST"), http.StatusMethodNotAllowed)
 		return
 	}
