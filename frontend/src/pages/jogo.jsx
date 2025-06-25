@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import BitcoinMonitor from '../components/bitcoinMonitor';
 import styles from '../styles/jogo.module.css'
 import ChessTeste from '../components/chess';
+import Chat from '../components/chat';
 
 function Jogo() {
   const [messages, setMessages] = useState([]);
@@ -14,6 +15,7 @@ function Jogo() {
       </div>
       <div className={styles.bitcoin}>
         <BitcoinMonitor />
+        <Chat />
       </div>
     </div>
   );

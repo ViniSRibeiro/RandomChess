@@ -13,22 +13,16 @@ const numbers = [
 const MAX = 20
 
 const BitcoinMonitor = () => {
-  const [bitcoin, setBitcoin] = useState([]);
-  const [bitcoinI, setBitcoinI] = useState([]);
+  const [bitcoin, setBitcoin] = useState(Array(MAX).fill(0));
+  const [bitcoinI, setBitcoinI] = useState(Array(MAX).fill(0));
   const ws = useRef(null);
 
   const updateMessages = (num) => {
     setBitcoin((prev) => {
-      if (prev.length >= MAX) {
-        return [num, ...prev.slice(0, -1)];
-      }
-      return [num, ...prev];
+      return [num, ...prev.slice(0, -1)];
     });
     setBitcoinI((prev) => {
-      if (prev.length >= MAX) {
-        return [...prev.slice(1), num];
-      }
-      return [...prev, num];
+      return [...prev.slice(1), num];
     });
   }
   useEffect(() => {
@@ -36,7 +30,6 @@ const BitcoinMonitor = () => {
     ws.current = new WebSocket("ws://localhost:8080/random");
 
     ws.current.onmessage = (event) => {
-      console.log(event)
       let msg = event.data;
       msg = JSON.parse(msg)
       updateMessages(msg.valor)
@@ -50,12 +43,6 @@ const BitcoinMonitor = () => {
       ws.current.close();
     };
   }, []);
-
-  const sendMessage = () => {
-    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send("👋 Button clicked!");
-    }
-  };
 
   return (
     <div>

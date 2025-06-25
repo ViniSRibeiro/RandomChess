@@ -1,0 +1,29 @@
+.container {
+  height: 300px;              /* Fixed height for the whole chat box */
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.messages {
+  flex: 1;                    /* Take all vertical space available */
+  overflow-y: auto;           /* Enable vertical scrolling */
+  margin: 10px 0;
+  border: 1px solid #999;
+  padding: 5px;
+  border-radius: 4px;
+  background-color: #222;
+  color: white;
+}
+
+/* Optional input + button style */
+input {
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+button {
+  padding: 5px;
+}
