@@ -15,5 +15,6 @@ func main() {
 	http.HandleFunc("/error", error)
 	http.HandleFunc("/random", s.random)
 	http.HandleFunc("/esperaJogo", s.esperaJogo)
+	http.HandleFunc("/ws", handleWebSocket)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
