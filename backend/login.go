@@ -42,6 +42,7 @@ func (s *Server) cadastro(w http.ResponseWriter, r *http.Request) {
 
 	// O usuário já existe? Retornamos um código de erro nesse caso
 	rows, _ := s.db.Query("SELECT nome FROM Usuario WHERE nome = ?", userData.Nome)
+	defer rows.Close()
 	if rows.Next() {
 		// Usuário já existe no banco de dados (erro: 409)
 		msg := fmt.Sprintf("Usuário %s já existe", userData.Nome)
@@ -89,6 +90,7 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := s.db.Query("SELECT * FROM Usuario WHERE nome = ? AND senha = ?", userData.Nome, userData.Senha)
+	defer res.Close()
 	if err == sql.ErrNoRows || !res.Next() {
 		log.Printf("[!] Usuário ou senha errados")
 		http.Error(w, jsonMsg("Usuario ou senha errados"), http.StatusConflict)

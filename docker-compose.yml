@@ -15,6 +15,6 @@ services:
     - ./frontend:/app
     ports:
       - "3000:3000"
-    command: [ "sh", "-c", "cd /app && npm install && npm start"]
+    command: [ "sh", "-c", "cd /app && npm install && npm start" ]
     depends_on:
       - backend
