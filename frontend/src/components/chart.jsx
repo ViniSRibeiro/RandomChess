@@ -21,7 +21,7 @@ const ChartComponent = ({ numbers }) => {
       {
         label: 'Random Values',
         data: numbers,
-        borderColor: 'rgba(75,192,192,1)',
+        borderColor: '#52b97d',
         backgroundColor: 'rgba(75,192,192,0.2)',
         tension: 0.3,
         pointRadius: 2,

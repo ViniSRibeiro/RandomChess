@@ -10,10 +10,11 @@ const numbers = [
 ];
 
 
-const MAX = 30
+const MAX = 20
 
 const BitcoinMonitor = () => {
   const [bitcoin, setBitcoin] = useState([]);
+  const [bitcoinI, setBitcoinI] = useState([]);
   const ws = useRef(null);
 
   const updateMessages = (num) => {
@@ -22,6 +23,12 @@ const BitcoinMonitor = () => {
         return [num, ...prev.slice(0, -1)];
       }
       return [num, ...prev];
+    });
+    setBitcoinI((prev) => {
+      if (prev.length >= MAX) {
+        return [...prev.slice(1), num];
+      }
+      return [...prev, num];
     });
   }
   useEffect(() => {
@@ -52,10 +59,8 @@ const BitcoinMonitor = () => {
 
   return (
     <div>
-      <div>
-        <div className={styles.chart_box}>
-          <ChartComponent numbers={bitcoin} />
-        </div>
+      <div className={styles.chart_box}>
+        <ChartComponent numbers={bitcoinI} />
       </div>
       <div className={styles.values}>
         {bitcoin.map((num, idx) => (

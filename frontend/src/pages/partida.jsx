@@ -59,17 +59,8 @@ const Partida = () => {
 
   return (
     <div className={styles.container}>
-      <h1> partida </h1>
+      <h1>Pesquisando por sua partida </h1>
       <Loading />
-      <div className={styles.partida}>
-        <div className={styles.board_box}>
-          <ChessTeste />
-        </div>
-        <div className={styles.chart_box}>
-          {/* <ChartComponent /> */}
-        </div>
-        <BitcoinMonitor />
-      </div>
     </div>
 
   )

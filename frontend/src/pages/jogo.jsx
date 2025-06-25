@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import BitcoinMonitor from '../components/bitcoinMonitor';
+import styles from '../styles/jogo.module.css'
+import ChessTeste from '../components/chess';
 
 function Jogo() {
   const [messages, setMessages] = useState([]);
   const ws = useRef(null);
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>WebSocket Demo</h1>
-      <div>
+    <div className={styles.container}>
+      <div className={styles.board_box}>
+        <ChessTeste />
+      </div>
+      <div className={styles.bitcoin}>
         <BitcoinMonitor />
       </div>
     </div>
