@@ -33,7 +33,7 @@ export default function ChessTeste() {
     return true;
   }
 
-  return <Chessboard
+  return<Chessboard
     position={game.fen()}
     // boardOrientation="black"
     onPieceDrop={onDrop}

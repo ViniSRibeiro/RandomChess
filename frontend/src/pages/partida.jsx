@@ -19,9 +19,16 @@ const Partida = () => {
   //   "senha": senha
   // })
   return (
-    <div>
-      <h1>Partida</h1>
-      <ChessTeste />
+    <div className={styles.container}>
+      <h1> partida </h1>
+          <div className={styles.partida}>
+      <div className={styles.board_box}>
+        <ChessTeste />
+      </div>
+      <div className={styles.chart_box}>
+        <ChartComponent />
+      </div>
+    </div>
       <div className={styles.bitcoin}>
         <p className={styles.neg}>-4.776</p>
         <p className={styles.pos}>+3.311</p>
@@ -54,8 +61,9 @@ const Partida = () => {
         <p className={styles.pos}>+6.845</p>
         <p className={styles.neg}>-1.490</p>
       </div>
-      <ChartComponent />
+
     </div>
+
   )
 }
 

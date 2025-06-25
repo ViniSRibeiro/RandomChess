@@ -1,4 +1,4 @@
-name: randomChess
+name: randomchess
 
 services:
   backend:

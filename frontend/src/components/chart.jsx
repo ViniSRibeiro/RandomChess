@@ -52,15 +52,6 @@ const ChartComponent = () => {
 
   return (
     <div>
-      {/* Fading list */}
-      <div className="fade-container">
-        {numbers.map((num, idx) => (
-          <p key={idx} className={num >= 0 ? styles.pos : styles.neg}>
-            {num >= 0 ? `+${num.toFixed(3)}` : num.toFixed(3)}
-          </p>
-        ))}
-      </div>
-
       {/* Chart container */}
       <div style={{ marginTop: '2rem' }}>
         <Line data={chartData} options={chartOptions} />
