@@ -1,5 +1,4 @@
 import logo from './logo.svg';
-import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 // Paginas
@@ -15,6 +14,7 @@ import Config from './pages/config'
 import Header from './components/header';
 
 import { AuthProvider } from './components/auth';
+import Jogo from './pages/jogo';
 
 function App() {
   return (
@@ -40,6 +40,8 @@ function App() {
           <Route path="/config"
             element={<Config />} />
 
+          <Route path="/jogo"
+            element={<Jogo />} />
           {/*Exemplo para privar as rotas no futuro*/}
           {/* <Route path="/admin/usuarios" */}
           {/*   element={<PrivateRoute allowedRoles={["admin"]}> <AdminUsuarios /> </PrivateRoute>} /> */}

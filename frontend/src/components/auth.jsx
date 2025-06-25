@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState, useEffect } from 'react'
 import { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -14,6 +14,13 @@ export const AuthProvider = ({ children }) => {
     setIsLogged(false);
     navigate('/')
   };
+
+  useEffect(() => {
+    if (localStorage.getItem("token") !== null) {
+      setIsLogged(true)
+    }
+  }, [])
+
 
   const cadastro = (data) => {
     console.log(data)
