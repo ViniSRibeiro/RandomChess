@@ -4,13 +4,23 @@ function Ws() {
   const [messages, setMessages] = useState([]);
   const ws = useRef(null);
 
+  const updateMessages = (num) => {
+    setMessages((prev) => {
+      if (prev.length >= 30) {
+        return [...prev.slice(1), num];
+      }
+      return [...prev, num];
+    });
+  }
   useEffect(() => {
     // Connect to WebSocket server
-    ws.current = new WebSocket("ws://localhost:8080/ws");
+    ws.current = new WebSocket("ws://localhost:8080/random");
 
     ws.current.onmessage = (event) => {
-      const msg = event.data;
-      setMessages((prev) => [...prev, msg]);
+      console.log(event)
+      let msg = event.data;
+      msg = JSON.parse(msg)
+      updateMessages(msg.token)
     };
 
     ws.current.onclose = () => {
