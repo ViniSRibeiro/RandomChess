@@ -94,7 +94,6 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 		}
 		valor = valor - valor_antigo
 		valor_antigo = valor
-		log.Printf("Enviando valor: %v", valor)
 		if err := conn.WriteMessage(websocket.TextMessage, jsonRandom(valor)); err != nil {
 			log.Println("write error:", err)
 			conn.Close()
