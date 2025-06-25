@@ -16,6 +16,10 @@ import (
 
 func (s *Server) cadastro(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		http.Error(w, jsonMsg("Use o método POST"), http.StatusMethodNotAllowed)
@@ -61,6 +65,10 @@ func (s *Server) cadastro(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 	if r.Method != http.MethodPost {
 		http.Error(w, jsonMsg("Metodo não permitido"), http.StatusMethodNotAllowed)
 	}
