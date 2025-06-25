@@ -14,32 +14,37 @@ import Resultados from './pages/resultados';
 import Config from './pages/config'
 import Header from './components/header';
 
+import { AuthProvider } from './components/auth';
+
 function App() {
   return (
     <BrowserRouter>
-      <Header />
-      <Routes>
-        <Route path="/"
-          element={<PaginaInicial />} />
+      <AuthProvider>
 
-        <Route path="/login"
-          element={<Login />} />
-        <Route path="/cadastro"
-          element={<Cadastro />} />
-        <Route path="/perfil"
-          element={<Perfil />} />
+        <Header />
+        <Routes>
+          <Route path="/"
+            element={<PaginaInicial />} />
 
-        <Route path="/partida"
-          element={<Partida />} />
-        <Route path="/resultados"
-          element={<Resultados />} />
-        <Route path="/config"
-          element={<Config />} />
+          <Route path="/login"
+            element={<Login />} />
+          <Route path="/cadastro"
+            element={<Cadastro />} />
+          <Route path="/perfil"
+            element={<Perfil />} />
 
-        {/*Exemplo para privar as rotas no futuro*/}
-        {/* <Route path="/admin/usuarios" */}
-        {/*   element={<PrivateRoute allowedRoles={["admin"]}> <AdminUsuarios /> </PrivateRoute>} /> */}
-      </Routes>
+          <Route path="/partida"
+            element={<Partida />} />
+          <Route path="/resultados"
+            element={<Resultados />} />
+          <Route path="/config"
+            element={<Config />} />
+
+          {/*Exemplo para privar as rotas no futuro*/}
+          {/* <Route path="/admin/usuarios" */}
+          {/*   element={<PrivateRoute allowedRoles={["admin"]}> <AdminUsuarios /> </PrivateRoute>} /> */}
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

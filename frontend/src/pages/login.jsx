@@ -1,15 +1,13 @@
 import React from "react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../components/auth"
 import styles from '../styles/login.module.css'
 
-const url_back = process.env.REACT_APP_BACKEND_URL
-
 const Login = () => {
-  const [nome, setNome] = useState()
-  const [senha, setSenha] = useState()
-
-  const router = useNavigate()
+  const { login } = useAuth()
+  const [nome, setNome] = useState("")
+  const [senha, setSenha] = useState("")
 
   const submit = (e) => {
     e.preventDefault()
@@ -17,17 +15,7 @@ const Login = () => {
       "nome": nome,
       "senha": senha
     }
-    fetch(url_back + `/login`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        return response.json()
-      })
-      .then(() => {
-        console.log("login feito com sucesso")
-      })
-      .catch((error) => console.log(error))
+    login(data)
   }
 
   return (

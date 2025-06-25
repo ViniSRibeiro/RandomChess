@@ -1,15 +1,13 @@
 import React from "react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../components/auth"
 import styles from '../styles/cadastro.module.css'
 
-const url_back = process.env.REACT_APP_BACKEND_URL
-
 const Cadastro = () => {
+  const { cadastro } = useAuth()
   const [nome, setNome] = useState("")
   const [senha, setSenha] = useState("")
-
-  const navigate = useNavigate();
 
   const submit = (e) => {
     e.preventDefault()
@@ -17,29 +15,7 @@ const Cadastro = () => {
       "nome": nome,
       "senha": senha
     }
-    console.log(data)
-    fetch("http://localhost:8080/cadastro", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        console.log(JSON.stringify(response))
-        if (response.ok) {
-          alert("FUNCIONOU");
-        }
-        console.log(response)
-      })
-      .then((responseData) => {
-        alert(JSON.stringify(responseData));
-        navigate("/login");
-      })
-      .catch((error) => {
-        console.error(error);
-        alert(error.mensagem || "Erro inesperado ao tentar cadastrar.");
-      });
+    cadastro(data)
   }
 
   return (

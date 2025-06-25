@@ -57,6 +57,7 @@ func (s *Server) cadastro(w http.ResponseWriter, r *http.Request) {
 		msg := fmt.Sprintf("Algo deu errado no cadastro de %s", userData.Nome)
 		http.Error(w, jsonMsg(msg), http.StatusInternalServerError)
 		log.Println(msg)
+		log.Println(err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
