@@ -9,7 +9,7 @@ const Header = () => {
   return (
     <div className={styles.container}>
       <Link className={styles.title} to="/">RandomChess</Link>
-      <div className={styles.container}>
+      <div className={styles.pages}>
         {!isLogged ? (
           <>
             <Link className={styles.link} to="/cadastro">Cadastro</Link>
