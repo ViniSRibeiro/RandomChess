@@ -115,32 +115,44 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
-
 	if r.Method != http.MethodGet {
 		http.Error(w, jsonMsg("Metodo não permitido"), http.StatusMethodNotAllowed)
 	}
 	// Antes de mais nada, validamos o pedido recebido
-	headers := r.Header
-	token := headers.Get("Authorization")
-	if token != "" {
+	contents, hasToken := r.Header["Authorization"]
+	if !hasToken {
 		http.Error(w, jsonMsg("Faltou o campo Authorization"), http.StatusBadRequest)
 		return
 	}
+	token := contents[0]
+	log.Println(token)
 	_, validToken := s.sessions[token]
 	if !validToken {
 		http.Error(w, jsonMsg("Token inválido"), http.StatusBadRequest)
 		return
 	}
+	// Atualizamos a conexão para websocket
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("Erro no upgrade para websocket em esperaJogo: %v", err)
+		return
+	}
+	defer conn.Close()
 
-	// Verificamos se já existe alguém na fila. Se já existir, podemos
-	// simplesmente montar o novo jogo entre essas duas pessoas
-	// Adicionamos o usuário na fila, caso não haja mais ninguém na fila
-	// esperando por um jogo
+	// Se não há ninguém na fila, esperamos
 	if len(s.waitingForGame) == 0 {
 		s.waitingForGame = append(s.waitingForGame, token)
-		// faz um loop esperando uma conexão respondendo um
-		// "aguarde"
-		w.WriteHeader(http.StatusOK)
+		// Enquanto não aparece outra pessoa, comunicamos que não há ninguém
+		for s.sessions[token].gameId < 0 {
+			conn.WriteJSON(map[string]string{
+				"mensagem": "Aguardando oponente...",
+			})
+			log.Printf("Aguardando para o token %s\n", token)
+			time.Sleep(2 * time.Second)
+		}
+		conn.WriteJSON(map[string]int{
+			"partida": s.sessions[token].gameId,
+		})
 		return
 	}
 	otherToken := s.waitingForGame[0]
@@ -151,8 +163,21 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 
 	s.sessions[token].gameId = gameId
 	s.sessions[otherToken].gameId = gameId
-	w.WriteHeader(http.StatusOK)
+	log.Printf("Criada a partida %d com os usuários de token %s e %s",
+		gameId, s.sessions[token].nome, s.sessions[otherToken].nome)
+
+	// Registramos uma nova rota para a nova partida
+	// routeName := fmt.Sprintf("/partida/%d", gameId)
+	// http.HandleFunc(routeName, s.partida(gameId))
 }
+
+// type HttpFunc = func(w http.ResponseWriter, r *http.Request)
+//
+// func (s *Server) partida(gameId int) HttpFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+//
+// 	}
+// }
 
 // -----------------------------------------------------------------------------
 
