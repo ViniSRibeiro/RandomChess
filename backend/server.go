@@ -8,8 +8,10 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/corentings/chess/v2"
+	"github.com/gorilla/websocket"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -73,14 +75,29 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, jsonMsg("Metodo não permitido"), http.StatusMethodNotAllowed)
 	}
-	var valor float64
-	switch s.randomness {
-	case RD_bitcoin:
-		valor = getBtcData()
-	case RD_standart:
-		valor = rand.Float64()
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("Upgrade failed:", err)
+		return
 	}
-	w.Write(jsonRandom(valor))
+	defer conn.Close()
+
+	var valor float64
+	for {
+		time.Sleep(1 * time.Second)
+		switch s.randomness {
+		case RD_bitcoin:
+			valor = getBtcData()
+		case RD_standart:
+			valor = rand.Float64()
+		}
+
+		log.Printf("Enviando valor: %v", valor)
+		if err := conn.WriteMessage(websocket.TextMessage, jsonRandom(valor)); err != nil {
+			log.Println("write error:", err)
+			conn.Close()
+		}
+	}
 }
 
 func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
