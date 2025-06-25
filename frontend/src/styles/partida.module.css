@@ -1,11 +1,12 @@
-import React from "react"
-
-const Partida = () => {
-  return (
-    <div>
-      <h1>Partida</h1>
-    </div>
-  )
+.bitcoin {
+  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
 }
 
-export default Partida
+.pos {
+  color: green;
+}
+
+.neg {
+  color: red;
+}
