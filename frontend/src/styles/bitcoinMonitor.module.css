@@ -6,3 +6,11 @@
   resize: both;
   overflow-y: scroll;
 }
+
+.pos {
+  color: #52b97d;
+}
+
+.neg {
+  color: red;
+}

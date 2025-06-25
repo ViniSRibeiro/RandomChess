@@ -46,7 +46,7 @@ const Partida = () => {
           // Caso tudo tenha dado certo
           alert("Sua partida foi encontrada")
           setTimeout(2000)
-          // navigate('/jogo')
+          navigate('/jogo')
         })
         .catch((error) => {
           alert("um erro inesperado ocorreu ao iniciar a partida");

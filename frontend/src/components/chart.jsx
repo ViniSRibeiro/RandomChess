@@ -14,13 +14,7 @@ import styles from '../styles/cadastro.module.css'
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 
-const numbers = [
-  6.127, 0.913, -6.861, 0.384, -2.263, 7.995, -0.842,
-  8.000, -4.337, -7.652, 2.789, 1.073, -3.982, 2.473, -1.157, 0.000, -3.509,
-  5.448, 4.782, -5.916, 1.936, -6.004, 3.621, -8.000, -0.175, 6.845, -1.490, 2, 3.311, -7.218,
-];
-
-const ChartComponent = () => {
+const ChartComponent = ({ numbers }) => {
   const chartData = {
     labels: numbers.map((_, index) => `#${index + 1}`), // simple x-axis labels
     datasets: [

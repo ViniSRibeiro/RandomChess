@@ -20,7 +20,7 @@ function Ws() {
       console.log(event)
       let msg = event.data;
       msg = JSON.parse(msg)
-      updateMessages(msg.token)
+      updateMessages(msg.valor)
     };
 
     ws.current.onclose = () => {

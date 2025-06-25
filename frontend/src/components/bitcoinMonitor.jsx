@@ -1,6 +1,7 @@
 import React from "react";
 import ChartComponent from "./chart";
 import styles from '../styles/bitcoinMonitor.module.css'
+import { useState, useEffect, useRef } from "react";
 
 const numbers = [
   6.127, 0.913, -6.861, 0.384, -2.263, 7.995, -0.842,
@@ -8,16 +9,56 @@ const numbers = [
   5.448, 4.782, -5.916, 1.936, -6.004, 3.621, -8.000, -0.175, 6.845, -1.490, 2, 3.311, -7.218
 ];
 
+
+const MAX = 30
+
 const BitcoinMonitor = () => {
+  const [bitcoin, setBitcoin] = useState([]);
+  const ws = useRef(null);
+
+  const updateMessages = (num) => {
+    setBitcoin((prev) => {
+      if (prev.length >= MAX) {
+        return [num, ...prev.slice(0, -1)];
+      }
+      return [num, ...prev];
+    });
+  }
+  useEffect(() => {
+    // Connect to WebSocket server
+    ws.current = new WebSocket("ws://localhost:8080/random");
+
+    ws.current.onmessage = (event) => {
+      console.log(event)
+      let msg = event.data;
+      msg = JSON.parse(msg)
+      updateMessages(msg.valor)
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket closed");
+    };
+
+    return () => {
+      ws.current.close();
+    };
+  }, []);
+
+  const sendMessage = () => {
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send("👋 Button clicked!");
+    }
+  };
+
   return (
     <div>
       <div>
         <div className={styles.chart_box}>
-          <ChartComponent />
+          <ChartComponent numbers={bitcoin} />
         </div>
       </div>
       <div className={styles.values}>
-        {numbers.map((num, idx) => (
+        {bitcoin.map((num, idx) => (
           <p
             key={idx}
             className={num >= 0 ? styles.pos : styles.neg}
