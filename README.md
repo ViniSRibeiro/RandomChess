@@ -11,7 +11,7 @@ A site that implements a game of chess that changes its rules according to the B
 ## Rotas
 
 - login
-- cadastro
+- cadastro (feito)
 - buscar partida
 - partida (lances)
 - bitcoin
