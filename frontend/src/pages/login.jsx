@@ -17,17 +17,12 @@ const Login = () => {
       "nome": nome,
       "senha": senha
     }
-
     fetch(url_back + `/login`, {
       method: 'POST',
-      body: data,
+      body: JSON.stringify(data),
     })
-      .then(async (response) => {
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.mensagem || "Erro ao cadastrar usuário.");
-        }
-        return response.json();
+      .then((response) => {
+        return response.json()
       })
       .then(() => {
         console.log("login feito com sucesso")

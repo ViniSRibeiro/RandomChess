@@ -17,21 +17,26 @@ const Cadastro = () => {
       "nome": nome,
       "senha": senha
     }
+    console.log(data)
     fetch(url_back + `/cadastro`, {
       method: 'POST',
-      body: data,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     })
-      .then(async (response) => {
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.mensagem || "Erro ao cadastrar usuário.");
-        }
-        return response.json();
+      .then((response) => {
+        console.log(response)
+
       })
-      .then(() => {
+      .then((responseData) => {
+        alert(JSON.stringify(responseData));
         navigate("/login");
       })
-      .catch((error) => console.log(error))
+      .catch((error) => {
+        console.error(error);
+        alert(error.mensagem || "Erro inesperado ao tentar cadastrar.");
+      });
   }
 
   return (
