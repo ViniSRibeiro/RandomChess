@@ -85,10 +85,20 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 // -----------------------------------------------------------------------------
 
 func ok(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
 func error(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 	http.Error(w, jsonMsg("Zorza Cabeça de melão"), http.StatusBadRequest)
 }
 
