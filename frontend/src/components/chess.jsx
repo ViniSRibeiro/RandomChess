@@ -35,6 +35,7 @@ export default function ChessTeste() {
 
   return <Chessboard
     position={game.fen()}
+    boardOrientation="black"
     onPieceDrop={onDrop}
     autoPromoteToQueen={true} // always promote to a queen for example simplicity
   />;
