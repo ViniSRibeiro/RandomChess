@@ -83,6 +83,7 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close()
 
 	var valor float64
+	valor_antigo := 0.0
 	for {
 		time.Sleep(1 * time.Second)
 		switch s.randomness {
@@ -91,7 +92,8 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 		case RD_standart:
 			valor = rand.Float64()
 		}
-
+		valor = valor - valor_antigo
+		valor_antigo = valor
 		log.Printf("Enviando valor: %v", valor)
 		if err := conn.WriteMessage(websocket.TextMessage, jsonRandom(valor)); err != nil {
 			log.Println("write error:", err)
@@ -182,7 +184,7 @@ func jsonToken(msg string) []byte {
 }
 
 func jsonRandom(num float64) []byte {
-	data := map[string]float64{"token": num}
+	data := map[string]float64{"valor": num}
 	res, _ := json.Marshal(data)
 	return res
 }
