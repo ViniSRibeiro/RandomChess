@@ -83,6 +83,7 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close()
 
 	var valor float64
+	var variacao float64
 	valor_antigo := 0.0
 	for {
 		time.Sleep(1 * time.Second)
@@ -92,9 +93,9 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 		case RD_standart:
 			valor = rand.Float64()
 		}
-		valor = valor - valor_antigo
+		variacao = valor - valor_antigo
 		valor_antigo = valor
-		if err := conn.WriteMessage(websocket.TextMessage, jsonRandom(valor)); err != nil {
+		if err := conn.WriteMessage(websocket.TextMessage, jsonRandom(variacao)); err != nil {
 			log.Println("write error:", err)
 			conn.Close()
 		}
