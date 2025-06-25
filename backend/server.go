@@ -65,6 +65,10 @@ func initDB() *sql.DB {
 
 func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 	if r.Method != http.MethodGet {
 		http.Error(w, jsonMsg("Metodo não permitido"), http.StatusMethodNotAllowed)
 	}
