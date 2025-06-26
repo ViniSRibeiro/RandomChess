@@ -26,10 +26,10 @@ type ServerMove struct {
 
 func fromClientMove(c ClientMove, turn string) ServerMove {
 	return ServerMove{
-		From: c.From,
-		To: c.To,
+		From:      c.From,
+		To:        c.To,
 		Promotion: c.Promotion,
-		Turn: turn,
+		Turn:      turn,
 		// NOTA isso aí depende de ser determinístico
 		NextTurn: getNextTurn(turn),
 	}
@@ -43,12 +43,11 @@ func (s *Server) partida(gameId int) HttpFunc {
 			return
 		}
 		// Validamos o pedido
-		contents, hasToken := r.Header["Authorization"]
-		if !hasToken {
+		token := getToken(r)
+		if token == "" {
 			http.Error(w, jsonMsg("Faltou o campo Authorization"), http.StatusBadRequest)
 			return
 		}
-		token := contents[0]
 		log.Println(token)
 		_, validToken := s.sessions[token]
 		if !validToken {
