@@ -110,6 +110,7 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
+	log.Println("Pedido de conexão chegou")
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusNoContent)
 		return
@@ -150,7 +151,7 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 		}
 		conn.WriteJSON(map[string]string{
 			"partida": string(s.sessions[token].gameId),
-			"color": "w", // podia ser sorteado. Que pena!
+			"color":   "w", // podia ser sorteado. Que pena!
 		})
 		return
 	}
@@ -163,10 +164,10 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 	s.sessions[token].gameId = gameId
 	s.sessions[otherToken].gameId = gameId
 	log.Printf("Criada a partida %d com os usuários de token %s e %s",
-	gameId, s.sessions[token].nome, s.sessions[otherToken].nome)
+		gameId, s.sessions[token].nome, s.sessions[otherToken].nome)
 	conn.WriteJSON(map[string]string{
 		"partida": string(s.sessions[token].gameId),
-		"color": "b", // podia ser sorteado
+		"color":   "b", // podia ser sorteado
 	})
 
 	// Registramos uma nova rota para a nova partida

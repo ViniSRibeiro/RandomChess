@@ -13,7 +13,10 @@ const Partida = () => {
 
   useEffect(() => {
     // Connect to WebSocket server
-    ws.current = new WebSocket("ws://localhost:8080/esperaJogo", [localStorage.getItem("token")]);
+    const token = localStorage.getItem("token")
+    console.log(token)
+    ws.current = new WebSocket("ws://localhost:8080/esperaJogo", [token]);
+
 
     ws.current.onmessage = (event) => {
       console.log(event)

@@ -9,7 +9,7 @@ export default function ChessTeste() {
 
   useEffect(() => {
     // Connect to WebSocket server
-    ws.current = new WebSocket("ws://localhost:8080/partida/" + localStorage.getItem("idPartida"));
+    ws.current = new WebSocket("ws://localhost:8080/partida/" + localStorage.getItem("token"));
 
     ws.current.onmessage = (event) => {
       let msg = event.data;
@@ -57,7 +57,7 @@ export default function ChessTeste() {
 
     // Manually set back the turn to the previous player
     const newFen = gameCopy.fen().split(' ');
-    newFen[1] = turn; // force the turn back
+    // newFen[1] = turn; // force the turn back
     gameCopy.load(newFen.join(' '));
     setGame(gameCopy);
 
@@ -100,7 +100,8 @@ export default function ChessTeste() {
 
   return <Chessboard
     position={game.fen()}
-    boardOrientation={localStorage.getItem("color")}
+    // boardOrientation={localStorage.getItem("color")}
+    boardOrientation="white"
     onPieceDrop={onDrop}
     autoPromoteToQueen={true} // always promote to a queen for example simplicity
   />;

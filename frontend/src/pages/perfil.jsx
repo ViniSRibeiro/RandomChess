@@ -2,16 +2,13 @@ import React, { useState } from "react"
 
 const Perfil = () => {
 
+  const [nome, setNome] = useState("")
+  const [totPartidasJogadas, setTotPartidasJogadas] = useState("")
+  const [totVitorias, setTotVitorias] = useState("")
+  const [totEmpates, setTotEmpates] = useState("")
+  const [totDerrotas, setTotDerrotas] = useState("")
 
-  const cadastro = (data) => {
-
-    const [nome, setNome] = useState("")
-    const [totPartidasJogadas, setTotPartidasJogadas] = useState("")
-    const [totVitorias, setTotVitorias] = useState("")
-    const [totEmpates, setTotEmpates] = useState("")
-    const [totDerrotas, setTotDerrotas] = useState("")
-
-    console.log(data)
+  const getData = () => {
     fetch("http://localhost:8080/perfil", {
       method: 'POST',
       headers: {
