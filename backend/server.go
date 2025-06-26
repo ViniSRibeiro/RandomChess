@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"math/rand/v2"
@@ -10,7 +11,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/corentings/chess/v2"
 	"github.com/gorilla/websocket"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -28,7 +28,7 @@ type Server struct {
 	userTokens     map[string]string   // chaves são nomes de usuário
 	waitingForGame []string            // fila de usuários aguardando jogo
 	randomness     randomness
-	games          []*chess.Game
+	games          []*GameState
 }
 
 func initServer() Server {
@@ -37,7 +37,7 @@ func initServer() Server {
 		sessions:   make(map[string]*Session),
 		userTokens: make(map[string]string),
 		randomness: RD_bitcoin,
-		games:      make([]*chess.Game, 0),
+		games:      make([]*GameState, 0),
 	}
 }
 
@@ -118,12 +118,11 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, jsonMsg("Metodo não permitido"), http.StatusMethodNotAllowed)
 	}
 	// Antes de mais nada, validamos o pedido recebido
-	contents, hasToken := r.Header["Authorization"]
-	if !hasToken {
+	token := getToken(r)
+	if token == "" {
 		http.Error(w, jsonMsg("Faltou o campo Authorization"), http.StatusBadRequest)
 		return
 	}
-	token := contents[0]
 	log.Println(token)
 	_, validToken := s.sessions[token]
 	if !validToken {
@@ -149,8 +148,9 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Aguardando para o token %s\n", token)
 			time.Sleep(2 * time.Second)
 		}
-		conn.WriteJSON(map[string]int{
-			"partida": s.sessions[token].gameId,
+		conn.WriteJSON(map[string]string{
+			"partida": string(s.sessions[token].gameId),
+			"color": "w", // podia ser sorteado. Que pena!
 		})
 		return
 	}
@@ -158,27 +158,35 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 	s.waitingForGame = s.waitingForGame[1:]
 
 	gameId := len(s.games)
-	s.games = append(s.games, chess.NewGame())
+	s.games = append(s.games, InitGameState(token, otherToken))
 
 	s.sessions[token].gameId = gameId
 	s.sessions[otherToken].gameId = gameId
 	log.Printf("Criada a partida %d com os usuários de token %s e %s",
-		gameId, s.sessions[token].nome, s.sessions[otherToken].nome)
+	gameId, s.sessions[token].nome, s.sessions[otherToken].nome)
+	conn.WriteJSON(map[string]string{
+		"partida": string(s.sessions[token].gameId),
+		"color": "b", // podia ser sorteado
+	})
 
 	// Registramos uma nova rota para a nova partida
-	// routeName := fmt.Sprintf("/partida/%d", gameId)
-	// http.HandleFunc(routeName, s.partida(gameId))
+	routeName := fmt.Sprintf("/partida/%d", gameId)
+	http.HandleFunc(routeName, s.partida(gameId))
 }
 
-// type HttpFunc = func(w http.ResponseWriter, r *http.Request)
-//
-// func (s *Server) partida(gameId int) HttpFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-//
-// 	}
-// }
-
 // -----------------------------------------------------------------------------
+
+func getToken(r *http.Request) string {
+	contents, hasAuth := r.Header["Authorization"]
+	if hasAuth {
+		return contents[0]
+	}
+	contents, hasAuth = r.Header["Sec-WebSocket-Protocol"]
+	if hasAuth {
+		return contents[0]
+	}
+	return ""
+}
 
 func ok(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
