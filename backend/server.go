@@ -119,12 +119,11 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, jsonMsg("Metodo não permitido"), http.StatusMethodNotAllowed)
 	}
 	// Antes de mais nada, validamos o pedido recebido
-	contents, hasToken := r.Header["Authorization"]
-	if !hasToken {
+	token := getToken(r)
+	if token == "" {
 		http.Error(w, jsonMsg("Faltou o campo Authorization"), http.StatusBadRequest)
 		return
 	}
-	token := contents[0]
 	log.Println(token)
 	_, validToken := s.sessions[token]
 	if !validToken {
@@ -177,6 +176,18 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 }
 
 // -----------------------------------------------------------------------------
+
+func getToken(r *http.Request) string {
+	contents, hasAuth := r.Header["Authorization"]
+	if hasAuth {
+		return contents[0]
+	}
+	contents, hasAuth = r.Header["Sec-WebSocket-Protocol"]
+	if hasAuth {
+		return contents[0]
+	}
+	return ""
+}
 
 func ok(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
