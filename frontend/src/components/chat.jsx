@@ -34,13 +34,13 @@ function Chat() {
   }, []);
 
   const sendMessage = () => {
-    console.log("evniando mensagem")
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       const data = {
         "msg": text
       }
-      ws.current.send(data);
+      ws.current.send(JSON.stringify(data));
       setText("")
+      console.log("evniando mensagem")
     }
   };
 
@@ -52,8 +52,12 @@ function Chat() {
       <ul className={styles.messages}>
         {messages.map((m, i) => (
           <li key={i}>
-            {JSON.parse(m).usuario}
-            {JSON.parse(m).mensagem}
+            <span style={{ color: "red" }}>
+              {JSON.parse(m).usuario + ": "}
+            </span>
+            <span>
+              {JSON.parse(m).mensagem}
+            </span>
           </li>
         ))}
       </ul>
