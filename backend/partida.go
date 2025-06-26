@@ -61,7 +61,7 @@ func (s *Server) partida(gameId int) HttpFunc {
 			return
 		}
 		defer conn.Close()
-
+		log.Printf("Começou partida id: %d do jogador: %s \n", gameId, s.sessions[token].nome)
 		session := s.sessions[token]
 		nome := session.nome
 		gameState := s.games[gameId]
@@ -74,6 +74,7 @@ func (s *Server) partida(gameId int) HttpFunc {
 					log.Printf("Ocorreu um erro na comunicação de partida com %s\n", nome)
 					return
 				}
+				log.Printf("Chegou Movimento: %v\n", move)
 				uci := move.From + move.To + move.Promotion
 				// Assumimos que movimento será válido, mas imprimimos o erro mesmo assim
 				err := gameState.game.PushNotationMove(uci, chess.UCINotation{},
@@ -85,9 +86,9 @@ func (s *Server) partida(gameId int) HttpFunc {
 				gameState.lastMove = move
 			} else {
 				for !gameState.madeMove {
-					conn.WriteJSON(map[string]string{
-						"mensagem": "Aguardando oponente...",
-					})
+					// conn.WriteJSON(map[string]string{
+					// 	"mensagem": "Aguardando oponente...",
+					// })
 					time.Sleep(200 * time.Millisecond)
 				}
 				gameState.madeMove = false // oponente fez um movimento

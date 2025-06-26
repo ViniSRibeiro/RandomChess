@@ -50,7 +50,8 @@ func (s *Server) chat(w http.ResponseWriter, r *http.Request) {
 	for {
 		var msg Mensagem
 		if err := conn.ReadJSON(&msg); err != nil {
-			log.Printf("Ocorreu um erro na decodificação da mensagem no chat.go\n")
+			log.Printf("Ocorreu um erro na decodificação da mensagem no chat.go\n %v", err)
+			log.Printf("mensagem %v", msg)
 			return
 		}
 
