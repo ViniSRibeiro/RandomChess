@@ -13,7 +13,7 @@ const Partida = () => {
 
   useEffect(() => {
     // Connect to WebSocket server
-    ws.current = new WebSocket("ws://localhost:8080/esperaJogo");
+    ws.current = new WebSocket("ws://localhost:8080/esperaJogo", [localStorage.getItem("token")]);
 
     ws.current.onmessage = (event) => {
       console.log(event)
@@ -39,6 +39,7 @@ const Partida = () => {
   const sendMessage = () => {
     setSearching(true)
     const token = localStorage.getItem("token")
+    console.log("iniciou")
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       const data = {
         method: 'GET',
@@ -48,6 +49,7 @@ const Partida = () => {
           typ: 'JWT',
         }
       }
+      console.log(data)
       ws.current.send(data);
     }
   };

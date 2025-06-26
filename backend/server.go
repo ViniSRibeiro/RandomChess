@@ -103,7 +103,6 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 		variacao = valor - valor_antigo
 		valor_antigo = valor
 		if err := conn.WriteMessage(websocket.TextMessage, jsonRandom(variacao)); err != nil {
-			log.Println("write error:", err)
 			conn.Close()
 		}
 	}
