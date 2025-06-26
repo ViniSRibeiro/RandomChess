@@ -16,10 +16,10 @@ export default function ChessOficial() {
     ws.current = new WebSocket("ws://" + url_back + "/partida/" + partida, token);
 
     const color = localStorage.getItem("color")
-    if (color == "white") {
+    if (color === "white") {
       setTurn("w")
     }
-    else if (color == "black") {
+    else if (color === "black") {
       setTurn("b")
     }
     else {
@@ -97,7 +97,7 @@ export default function ChessOficial() {
   function onDrop(sourceSquare, targetSquare) {
     const color = localStorage.getItem("color")
     console.log(color, turn)
-    if (!((turn == 'w' && color == "white") || (turn == 'b' && color == "black"))) {
+    if (!((turn === 'w' && color === "white") || (turn === 'b' && color === "black"))) {
       console.log("Não é sua vez de jogar")
       return
     }
@@ -106,10 +106,10 @@ export default function ChessOficial() {
       return
     }
 
-    const player = ""
-    if (color == "white") {
+    let player = ""
+    if (color === "white") {
       player = "w"
-    } else if (color == "black") {
+    } else if (color === "black") {
       player = "b"
     }
 
