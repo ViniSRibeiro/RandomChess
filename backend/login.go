@@ -90,7 +90,6 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := s.db.Query("SELECT * FROM Usuario WHERE nome = ? AND senha = ?", userData.Nome, userData.Senha)
-	defer res.Close()
 	if err == sql.ErrNoRows || !res.Next() {
 		log.Printf("[!] Usuário ou senha errados")
 		http.Error(w, jsonMsg("Usuario ou senha errados"), http.StatusConflict)
