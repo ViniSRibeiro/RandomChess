@@ -31,7 +31,7 @@ const Partida = () => {
           localStorage.setItem("partida", data.partida)
           localStorage.setItem("color", data.color)
           alert("Sua partida foi encontrada")
-          // navigate('/jogo')
+          navigate('/jogo')
         }
       }
       return

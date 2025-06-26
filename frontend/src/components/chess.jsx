@@ -4,14 +4,14 @@ import { Chessboard } from "react-chessboard";
 
 const url_back = process.env.REACT_APP_BACKEND_URL
 
-export default function ChessTeste() {
+export default function ChessOficial() {
   const [game, setGame] = useState(new Chess());
   const [turn, setTurn] = useState("");
   const ws = useRef(null);
 
   useEffect(() => {
     // Connect to WebSocket server
-    ws.current = new WebSocket("ws://" + url_back + "/partida/" + localStorage.getItem("token"));
+    ws.current = new WebSocket("ws://" + url_back + "/partida/" + localStorage.getItem("partida"));
 
     ws.current.onmessage = (event) => {
       let msg = event.data;
@@ -43,13 +43,6 @@ export default function ChessTeste() {
     }
   };
 
-
-  // function makeAMove(move) {
-  //   const gameCopy = { ...game };
-  //   const result = gameCopy.move(move);
-  //   setGame(gameCopy);
-  //   return result; // null if the move was illegal, the move object if the move was legal
-  // }
   function makeAMove(move) {
     const gameCopy = new Chess(game.fen()); // clone game safely
 
@@ -102,8 +95,7 @@ export default function ChessTeste() {
 
   return <Chessboard
     position={game.fen()}
-    // boardOrientation={localStorage.getItem("color")}
-    boardOrientation="white"
+    boardOrientation={localStorage.getItem("color")}
     onPieceDrop={onDrop}
     autoPromoteToQueen={true} // always promote to a queen for example simplicity
   />;
