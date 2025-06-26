@@ -172,6 +172,7 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 		"partida":   fmt.Sprint(s.sessions[token].gameId),
 		"color":     "b", // podia ser sorteado
 	})
+	log.Printf("ENVIOU MENSGEAM PRO SEGUNDO")
 	log.Printf("Endereço de quem chegou %s", conn.LocalAddr().String())
 
 	// Registramos uma nova rota para a nova partida
@@ -186,7 +187,7 @@ func getToken(r *http.Request) string {
 	if hasAuth {
 		return contents[0]
 	}
-	contents, hasAuth = r.Header["Sec-WebSocket-Protocol"]
+	contents, hasAuth = r.Header["Sec-Websocket-Protocol"]
 	if hasAuth {
 		return contents[0]
 	}
