@@ -59,7 +59,6 @@ export const AuthProvider = ({ children }) => {
       .catch((error) => {
         alert("um erro inesperado ocorreu ao cadastrar o professor");
         console.log("cadastro.jsx >>> ", error)
-        throw new error
       })
   }
 
@@ -104,7 +103,6 @@ export const AuthProvider = ({ children }) => {
       .catch((error) => {
         alert("um erro inesperado ocorreu ao fazer o login");
         console.log("login.jsx >>> ", error)
-        throw new error
       })
   }
   return (

@@ -38,7 +38,7 @@ export default function ChessOficial() {
         from: from,
         to: to,
         promotion: promotion,
-      });
+      }, msg.turn);
       console.log(" - Adversario fez o lance", from, to, promotion)
       setTurn(msg.turn)
     };
@@ -62,7 +62,7 @@ export default function ChessOficial() {
     }
   };
 
-  function makeAMove(move) {
+  function makeAMove(move, player) {
     const gameCopy = new Chess(game.fen()); // clone game safely
 
     const result = gameCopy.move(move, { sloppy: true });
@@ -74,7 +74,7 @@ export default function ChessOficial() {
 
     // Manually set back the turn to the previous player
     const newFen = gameCopy.fen().split(' ');
-    newFen[1] = turn; // force the turn back
+    newFen[1] = player; // force the turn back
     gameCopy.load(newFen.join(' '));
     setGame(gameCopy);
 
@@ -105,11 +105,19 @@ export default function ChessOficial() {
       console.log("backend não conectado")
       return
     }
+
+    const player = ""
+    if (color == "white") {
+      player = "w"
+    } else if (color == "black") {
+      player = "b"
+    }
+
     const move = makeAMove({
       from: sourceSquare,
       to: targetSquare,
       promotion: "q", // always promote to a queen for example simplicity
-    });
+    }, player);
 
     // if illegal move
     if (move === null) return false;
