@@ -152,7 +152,7 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 		}
 		conn.WriteJSON(map[string]string{
 			"encontrou": "S",
-			"partida":   string(s.sessions[token].gameId),
+			"partida":   fmt.Sprint(s.sessions[token].gameId),
 			"color":     "w", // podia ser sorteado. Que pena!
 		})
 		return
@@ -169,7 +169,7 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 		gameId, s.sessions[token].nome, s.sessions[otherToken].nome)
 	conn.WriteJSON(map[string]string{
 		"encontrou": "S",
-		"partida":   string(s.sessions[token].gameId),
+		"partida":   fmt.Sprint(s.sessions[token].gameId),
 		"color":     "b", // podia ser sorteado
 	})
 
