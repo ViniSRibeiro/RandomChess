@@ -28,6 +28,9 @@ export default function ChessOficial() {
 
     ws.current.onmessage = (event) => {
       let msg = event.data;
+      msg = JSON.parse(msg)
+      console.log(msg)
+
       let from = msg.from
       let to = msg.to
       let promotion = msg.promotion
