@@ -153,7 +153,6 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Aguardando para o token %s\n", token)
 			time.Sleep(2 * time.Second)
 		}
-		log.Printf("Endereço de quem ta esperando %s", conn.LocalAddr().String())
 		conn.WriteJSON(map[string]string{
 			"encontrou": "S",
 			"partida":   fmt.Sprint(s.sessions[token].gameId),
@@ -161,27 +160,31 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+	log.Printf("fila de espera antes: %v", s.waitingForGame)
 	otherToken := s.waitingForGame[0]
+	// clear(s.waitingForGame)
 	s.waitingForGame = s.waitingForGame[1:]
+	log.Printf("fila de espera depois: %v", s.waitingForGame)
 
 	gameId := len(s.games)
-	s.games = append(s.games, InitGameState(token, otherToken))
+	s.games = append(s.games, InitGameState(otherToken, token))
+	// Registramos uma nova rota para a nova partida
+	routeName := fmt.Sprintf("/partida/%d", gameId)
+	http.HandleFunc(routeName, s.partida(gameId))
 
 	s.sessions[token].gameId = gameId
 	s.sessions[otherToken].gameId = gameId
-	log.Printf("Criada a partida %d com os usuários de token %s e %s",
-		gameId, s.sessions[token].nome, s.sessions[otherToken].nome)
+
+	log.Printf("sessões: %v", s.sessions)
+
 	conn.WriteJSON(map[string]string{
 		"encontrou": "S",
 		"partida":   fmt.Sprint(s.sessions[token].gameId),
 		"color":     "black", // podia ser sorteado
 	})
-	log.Printf("ENVIOU MENSGEAM PRO SEGUNDO")
-	log.Printf("Endereço de quem chegou %s", conn.LocalAddr().String())
+	log.Printf("Criada a partida %d com os usuários de token %s e %s",
+		gameId, s.sessions[token].nome, s.sessions[otherToken].nome)
 
-	// Registramos uma nova rota para a nova partida
-	routeName := fmt.Sprintf("/partida/%d", gameId)
-	http.HandleFunc(routeName, s.partida(gameId))
 }
 
 // -----------------------------------------------------------------------------

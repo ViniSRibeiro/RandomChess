@@ -37,6 +37,7 @@ func fromClientMove(c ClientMove, turn string) ServerMove {
 
 func (s *Server) partida(gameId int) HttpFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("entrou na partida")
 		enableCors(&w)
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
@@ -68,12 +69,15 @@ func (s *Server) partida(gameId int) HttpFunc {
 		for gameState.game.Outcome() == chess.NoOutcome {
 			currentPlayer := gameState.players[gameState.turn]
 			if token == currentPlayer {
+				log.Printf("Vez do jogador: %v\n", nome)
 				// O jogador tem que fazer um movimento aqui
 				var move ClientMove
 				if err := conn.ReadJSON(&move); err != nil {
 					log.Printf("Ocorreu um erro na comunicação de partida com %s\n", nome)
+					log.Printf("[ ! ] Erro: %v\n", err)
 					return
 				}
+				gameState.sincMove = false
 				log.Printf("Chegou Movimento: %v\n", move)
 				uci := move.From + move.To + move.Promotion
 				// Assumimos que movimento será válido, mas imprimimos o erro mesmo assim
@@ -85,21 +89,31 @@ func (s *Server) partida(gameId int) HttpFunc {
 				gameState.madeMove = true
 				gameState.lastMove = move
 			} else {
+				log.Printf("Jogador %v espera o outro \n", nome)
 				for !gameState.madeMove {
 					// conn.WriteJSON(map[string]string{
 					// 	"mensagem": "Aguardando oponente...",
 					// })
 					time.Sleep(200 * time.Millisecond)
 				}
-				gameState.madeMove = false // oponente fez um movimento
 				// Notificamos o trem do movimento feito
 				serverMove := fromClientMove(gameState.lastMove, gameState.turn)
+				log.Printf("Manda jogada para %v", nome)
 				if err := conn.WriteJSON(serverMove); err != nil {
 					log.Printf("Ocorreu um erro na comunicação de partida com %s\n", nome)
 					return
 				}
+				gameState.sincMove = true
 			}
-			gameState.turn = getNextTurn(gameState.turn)
+			for {
+				if gameState.madeMove && gameState.sincMove {
+					gameState.madeMove = false // oponente fez um movimento
+					log.Println("Vira turno")
+					gameState.turn = getNextTurn(gameState.turn)
+					break
+				}
+				time.Sleep(200 * time.Millisecond)
+			}
 		}
 	}
 }
