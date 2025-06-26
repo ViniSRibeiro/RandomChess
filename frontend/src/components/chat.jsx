@@ -34,6 +34,7 @@ function Chat() {
   }, []);
 
   const sendMessage = () => {
+    console.log("evniando mensagem")
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       const data = {
         "msg": text
@@ -50,7 +51,10 @@ function Chat() {
 
       <ul className={styles.messages}>
         {messages.map((m, i) => (
-          <li key={i}>{JSON.stringify(m)}</li>
+          <li key={i}>
+            {JSON.parse(m).usuario}
+            {JSON.parse(m).mensagem}
+          </li>
         ))}
       </ul>
 

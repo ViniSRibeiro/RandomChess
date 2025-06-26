@@ -16,18 +16,19 @@ export default function ChessOficial() {
     ws.current = new WebSocket("ws://" + url_back + "/partida/" + partida, token);
 
     ws.current.onmessage = (event) => {
-      console.log("RECEBEU lance")
       let msg = event.data;
       let from = msg.from
       let to = msg.to
       let promotion = msg.promotion
 
+      console.log("RECEBEU lance")
+      console.log(msg)
       const move = makeAMove({
         from: from,
         to: to,
         promotion: promotion,
       });
-      console.log(" - Adversario fez o lance")
+      console.log(" - Adversario fez o lance", from, to, promotion)
 
       setTurn(msg.turn)
     };
