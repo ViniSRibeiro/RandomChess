@@ -88,6 +88,10 @@ export default function ChessOficial() {
   // }
 
   function onDrop(sourceSquare, targetSquare) {
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
+      console.log("backend não conectado")
+      return
+    }
     const move = makeAMove({
       from: sourceSquare,
       to: targetSquare,
