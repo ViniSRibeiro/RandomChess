@@ -27,6 +27,7 @@ export default function ChessOficial() {
     }
 
     ws.current.onmessage = (event) => {
+      console.log("RECEBEU lance --------------------")
       let msg = event.data;
       msg = JSON.parse(msg)
       console.log(msg)
@@ -43,7 +44,7 @@ export default function ChessOficial() {
         promotion: promotion,
       }, msg.turn);
       console.log(" - Adversario fez o lance", from, to, promotion)
-      setTurn(msg.turn)
+      setTurn(msg.nextTurn)
     };
 
     ws.current.onclose = () => {
@@ -57,6 +58,7 @@ export default function ChessOficial() {
 
   const sendMessage = (move) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      console.log(JSON.stringify(move))
       ws.current.send(JSON.stringify(move));
       console.log("Lance enviado ao backend")
     }
@@ -66,6 +68,7 @@ export default function ChessOficial() {
   };
 
   function makeAMove(move, player) {
+    console.log(move, player)
     const gameCopy = new Chess(game.fen()); // clone game safely
 
     const result = gameCopy.move(move, { sloppy: true });
