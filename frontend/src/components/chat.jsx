@@ -15,7 +15,8 @@ function Chat() {
   }
   useEffect(() => {
     // Connect to WebSocket server
-    ws.current = new WebSocket("ws://" + url_back + "/ws");
+    const token = localStorage.getItem("token")
+    ws.current = new WebSocket("ws://" + url_back + "/chat", token);
 
     ws.current.onmessage = (event) => {
       console.log(event)
@@ -34,7 +35,10 @@ function Chat() {
 
   const sendMessage = () => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(text);
+      const data = {
+        "msg": text
+      }
+      ws.current.send(data);
       setText("")
     }
   };
@@ -46,13 +50,14 @@ function Chat() {
 
       <ul className={styles.messages}>
         {messages.map((m, i) => (
-          <li key={i}>{m}</li>
+          <li key={i}>{JSON.stringify(m)}</li>
         ))}
       </ul>
 
       <input
         type="text"
         value={text}
+        placeholder="Digite aqui sua mensagem"
         onChange={(e) => setText(e.target.value)}
       />
       <button onClick={sendMessage}>Send</button>

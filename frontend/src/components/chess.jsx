@@ -11,9 +11,12 @@ export default function ChessOficial() {
 
   useEffect(() => {
     // Connect to WebSocket server
-    ws.current = new WebSocket("ws://" + url_back + "/partida/" + localStorage.getItem("partida"));
+    const token = localStorage.getItem("token")
+    const partida = localStorage.getItem("partida")
+    ws.current = new WebSocket("ws://" + url_back + "/partida/" + partida, token);
 
     ws.current.onmessage = (event) => {
+      console.log("RECEBEU lance")
       let msg = event.data;
       let from = msg.from
       let to = msg.to
@@ -24,6 +27,7 @@ export default function ChessOficial() {
         to: to,
         promotion: promotion,
       });
+      console.log(" - Adversario fez o lance")
 
       setTurn(msg.turn)
     };
@@ -41,6 +45,9 @@ export default function ChessOficial() {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(move);
     }
+    else {
+      console.log("Erro enviando mensagem para o backend")
+    }
   };
 
   function makeAMove(move) {
@@ -48,11 +55,14 @@ export default function ChessOficial() {
 
     const result = gameCopy.move(move, { sloppy: true });
 
-    if (result === null) return null;
+    if (result === null) {
+      console.log("Lance inválido")
+      return null;
+    }
 
     // Manually set back the turn to the previous player
     const newFen = gameCopy.fen().split(' ');
-    // newFen[1] = turn; // force the turn back
+    newFen[1] = turn; // force the turn back
     gameCopy.load(newFen.join(' '));
     setGame(gameCopy);
 
