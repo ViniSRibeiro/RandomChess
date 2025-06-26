@@ -16,7 +16,15 @@ export default function ChessOficial() {
     ws.current = new WebSocket("ws://" + url_back + "/partida/" + partida, token);
 
     const color = localStorage.getItem("color")
-    setTurn(color)
+    if (color == "white") {
+      setTurn("w")
+    }
+    else if (color == "black") {
+      setTurn("b")
+    }
+    else {
+      console.log("CHESS: Um erro bizarro ocorreu. Recebi uma cor que não deveria")
+    }
 
     ws.current.onmessage = (event) => {
       let msg = event.data;
@@ -32,7 +40,6 @@ export default function ChessOficial() {
         promotion: promotion,
       });
       console.log(" - Adversario fez o lance", from, to, promotion)
-
       setTurn(msg.turn)
     };
 
@@ -47,7 +54,7 @@ export default function ChessOficial() {
 
   const sendMessage = (move) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(move);
+      ws.current.send(JSON.stringify(move));
       console.log("Lance enviado ao backend")
     }
     else {
@@ -88,6 +95,12 @@ export default function ChessOficial() {
   // }
 
   function onDrop(sourceSquare, targetSquare) {
+    const color = localStorage.getItem("color")
+    console.log(color, turn)
+    if (!((turn == 'w' && color == "white") || (turn == 'b' && color == "black"))) {
+      console.log("Não é sua vez de jogar")
+      return
+    }
     if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
       console.log("backend não conectado")
       return
