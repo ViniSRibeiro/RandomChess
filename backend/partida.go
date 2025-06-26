@@ -103,18 +103,20 @@ func (s *Server) partida(gameId int) HttpFunc {
 					log.Printf("Ocorreu um erro na comunicação de partida com %s\n", nome)
 					return
 				}
+				log.Println("atualiza turno")
+				gameState.turn = getNextTurn(gameState.turn)
 				gameState.sincMove = true
 			}
 			for {
 				if gameState.madeMove && gameState.sincMove {
-					log.Println("Vira turno")
-					gameState.turn = getNextTurn(gameState.turn)
+					log.Println("espera para virar")
 					time.Sleep(200 * time.Millisecond)
 					gameState.madeMove = false // oponente fez um movimento
 					break
 				}
 				time.Sleep(200 * time.Millisecond)
 			}
+			log.Println("vira turno")
 		}
 	}
 }
