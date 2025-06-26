@@ -30,7 +30,8 @@ export default function ChessOficial() {
       console.log("RECEBEU lance --------------------")
       let msg = event.data;
       msg = JSON.parse(msg)
-      console.log(msg)
+      console.log(msg, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+      console.log("dlavhiavvavrj 123")
 
       let from = msg.from
       let to = msg.to
@@ -60,7 +61,7 @@ export default function ChessOficial() {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       console.log(JSON.stringify(move))
       ws.current.send(JSON.stringify(move));
-      console.log("Lance enviado ao backend")
+      console.log("Lance enviado ao backend", JSON.stringify(move))
     }
     else {
       console.log("Erro enviando mensagem para o backend")
@@ -101,6 +102,7 @@ export default function ChessOficial() {
   // }
 
   function onDrop(sourceSquare, targetSquare) {
+    console.log("Entrou no ondrop")
     const color = localStorage.getItem("color")
     console.log(color, turn)
     if (!((turn === 'w' && color === "white") || (turn === 'b' && color === "black"))) {

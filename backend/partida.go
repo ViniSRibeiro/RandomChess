@@ -107,9 +107,10 @@ func (s *Server) partida(gameId int) HttpFunc {
 			}
 			for {
 				if gameState.madeMove && gameState.sincMove {
-					gameState.madeMove = false // oponente fez um movimento
 					log.Println("Vira turno")
 					gameState.turn = getNextTurn(gameState.turn)
+					time.Sleep(200 * time.Millisecond)
+					gameState.madeMove = false // oponente fez um movimento
 					break
 				}
 				time.Sleep(200 * time.Millisecond)
