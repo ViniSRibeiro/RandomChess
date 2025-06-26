@@ -137,7 +137,6 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
-
 	// Se não há ninguém na fila, esperamos
 	if len(s.waitingForGame) == 0 {
 		s.waitingForGame = append(s.waitingForGame, token)
@@ -150,6 +149,7 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Aguardando para o token %s\n", token)
 			time.Sleep(2 * time.Second)
 		}
+		log.Printf("Endereço de quem ta esperando %s", conn.LocalAddr().String())
 		conn.WriteJSON(map[string]string{
 			"encontrou": "S",
 			"partida":   fmt.Sprint(s.sessions[token].gameId),
@@ -172,6 +172,7 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 		"partida":   fmt.Sprint(s.sessions[token].gameId),
 		"color":     "b", // podia ser sorteado
 	})
+	log.Printf("Endereço de quem chegou %s", conn.LocalAddr().String())
 
 	// Registramos uma nova rota para a nova partida
 	routeName := fmt.Sprintf("/partida/%d", gameId)
