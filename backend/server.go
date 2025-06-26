@@ -9,6 +9,7 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"os"
+	"slices"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -138,6 +139,9 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 	// Se não há ninguém na fila, esperamos
+	if slices.Contains(s.waitingForGame, token) {
+		return
+	}
 	if len(s.waitingForGame) == 0 {
 		s.waitingForGame = append(s.waitingForGame, token)
 		// Enquanto não aparece outra pessoa, comunicamos que não há ninguém
