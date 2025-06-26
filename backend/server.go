@@ -36,7 +36,7 @@ func initServer() Server {
 		db:         initDB(),
 		sessions:   make(map[string]*Session),
 		userTokens: make(map[string]string),
-		randomness: RD_bitcoin,
+		randomness: RD_standart,
 		games:      make([]*GameState, 0),
 	}
 }
@@ -98,7 +98,7 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 		case RD_bitcoin:
 			valor = getBtcData()
 		case RD_standart:
-			valor = rand.Float64()
+			valor = (rand.Float64() - 0.5) * 10
 		}
 		variacao = valor - valor_antigo
 		valor_antigo = valor
@@ -232,6 +232,15 @@ func jsonToken(msg string) []byte {
 
 func jsonRandom(num float64) []byte {
 	data := map[string]float64{"valor": num}
+	res, _ := json.Marshal(data)
+	return res
+}
+
+func jsonChat(msg string, user string) []byte {
+	data := map[string]string{
+		"mensagem": msg,
+		"usuario":  user,
+	}
 	res, _ := json.Marshal(data)
 	return res
 }
