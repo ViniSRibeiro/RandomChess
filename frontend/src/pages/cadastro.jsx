@@ -22,7 +22,7 @@ const Cadastro = () => {
       "nome": nome,
       "senha": senha
     }
-    // cadastro(data)
+    cadastro(data)
   }
 
   return (

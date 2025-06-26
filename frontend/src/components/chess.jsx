@@ -15,6 +15,9 @@ export default function ChessOficial() {
     const partida = localStorage.getItem("partida")
     ws.current = new WebSocket("ws://" + url_back + "/partida/" + partida, token);
 
+    const color = localStorage.getItem("color")
+    setTurn(color)
+
     ws.current.onmessage = (event) => {
       let msg = event.data;
       let from = msg.from
@@ -45,6 +48,7 @@ export default function ChessOficial() {
   const sendMessage = (move) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       ws.current.send(move);
+      console.log("Lance enviado ao backend")
     }
     else {
       console.log("Erro enviando mensagem para o backend")
@@ -69,7 +73,7 @@ export default function ChessOficial() {
 
     if (game.game_over() || game.in_draw()) {
       alert("Jogo acabou")
-      return
+      return null
     }
 
     return result;
@@ -84,7 +88,6 @@ export default function ChessOficial() {
   // }
 
   function onDrop(sourceSquare, targetSquare) {
-    if (!turn) return false
     const move = makeAMove({
       from: sourceSquare,
       to: targetSquare,
