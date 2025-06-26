@@ -144,14 +144,16 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 		// Enquanto não aparece outra pessoa, comunicamos que não há ninguém
 		for s.sessions[token].gameId < 0 {
 			conn.WriteJSON(map[string]string{
-				"mensagem": "Aguardando oponente...",
+				"encontrou": "N",
+				"mensagem":  "Aguardando oponente...",
 			})
 			log.Printf("Aguardando para o token %s\n", token)
 			time.Sleep(2 * time.Second)
 		}
 		conn.WriteJSON(map[string]string{
-			"partida": string(s.sessions[token].gameId),
-			"color":   "w", // podia ser sorteado. Que pena!
+			"encontrou": "S",
+			"partida":   string(s.sessions[token].gameId),
+			"color":     "w", // podia ser sorteado. Que pena!
 		})
 		return
 	}
@@ -166,8 +168,9 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Criada a partida %d com os usuários de token %s e %s",
 		gameId, s.sessions[token].nome, s.sessions[otherToken].nome)
 	conn.WriteJSON(map[string]string{
-		"partida": string(s.sessions[token].gameId),
-		"color":   "b", // podia ser sorteado
+		"encontrou": "S",
+		"partida":   string(s.sessions[token].gameId),
+		"color":     "b", // podia ser sorteado
 	})
 
 	// Registramos uma nova rota para a nova partida
