@@ -1,5 +1,7 @@
 import React, { useState } from "react"
 
+const url_back = process.env.REACT_APP_BACKEND_URL
+
 const Perfil = () => {
 
   const [nome, setNome] = useState("")
@@ -9,7 +11,7 @@ const Perfil = () => {
   const [totDerrotas, setTotDerrotas] = useState("")
 
   const getData = () => {
-    fetch("http://localhost:8080/perfil", {
+    fetch("http://" + url_back + "/perfil", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

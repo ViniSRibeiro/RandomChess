@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
+const url_back = process.env.REACT_APP_BACKEND_URL
+
 function Ws() {
   const [messages, setMessages] = useState([]);
   const ws = useRef(null);
@@ -14,7 +16,7 @@ function Ws() {
   }
   useEffect(() => {
     // Connect to WebSocket server
-    ws.current = new WebSocket("ws://localhost:8080/random");
+    ws.current = new WebSocket("ws://" + url_back + "/random");
 
     ws.current.onmessage = (event) => {
       console.log(event)

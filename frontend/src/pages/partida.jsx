@@ -15,21 +15,24 @@ const Partida = () => {
     // Connect to WebSocket server
     const token = localStorage.getItem("token")
     console.log(token)
-    ws.current = new WebSocket("ws://localhost:8080/esperaJogo", token);
+    ws.current = new WebSocket("ws://" + url_back + "/esperaJogo", token);
 
 
     ws.current.onmessage = (event) => {
       let data = event.data;
+      data = JSON.parse(data)
       console.log(data)
       let msg = data.mensagem;
-      let encontrou = Object.prototype.hasOwnProperty.call(data, 'encontrou');
 
-      if (encontrou === "S") {
-        // Caso tudo tenha dado certo
-        localStorage.setItem(data.partida)
-        localStorage.setItem(data.color)
-        alert("Sua partida foi encontrada")
-        navigate('/jogo')
+      if (data.hasOwnProperty('encontrou')) {
+        let encontrou = data.encontrou;
+        if (encontrou === "S") {
+          // Caso tudo tenha dado certo
+          localStorage.setItem("partida", data.partida)
+          localStorage.setItem("color", data.color)
+          alert("Sua partida foi encontrada")
+          // navigate('/jogo')
+        }
       }
       return
     };

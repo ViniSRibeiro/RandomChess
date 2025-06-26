@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from '../styles/chat.module.css'
 
+const url_back = process.env.REACT_APP_BACKEND_URL
+
 function Chat() {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("")
@@ -13,7 +15,7 @@ function Chat() {
   }
   useEffect(() => {
     // Connect to WebSocket server
-    ws.current = new WebSocket("ws://localhost:8080/ws");
+    ws.current = new WebSocket("ws://" + url_back + "/ws");
 
     ws.current.onmessage = (event) => {
       console.log(event)

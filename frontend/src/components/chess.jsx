@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import Chess from "chess.js";
 import { Chessboard } from "react-chessboard";
 
+const url_back = process.env.REACT_APP_BACKEND_URL
+
 export default function ChessTeste() {
   const [game, setGame] = useState(new Chess());
   const [turn, setTurn] = useState("");
@@ -9,7 +11,7 @@ export default function ChessTeste() {
 
   useEffect(() => {
     // Connect to WebSocket server
-    ws.current = new WebSocket("ws://localhost:8080/partida/" + localStorage.getItem("token"));
+    ws.current = new WebSocket("ws://" + url_back + "/partida/" + localStorage.getItem("token"));
 
     ws.current.onmessage = (event) => {
       let msg = event.data;
