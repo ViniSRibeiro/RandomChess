@@ -43,7 +43,7 @@ export default function ChessOficial() {
         from: from,
         to: to,
         promotion: promotion,
-      }, msg.turn);
+      });
       if (!move) {
         console.log("ALGO DEU ESQUISITO NO BACK")
         return
@@ -77,34 +77,37 @@ export default function ChessOficial() {
     const gameCopy = { ...game };
     const result = gameCopy.move(move);
     setGame(gameCopy);
-    return result; // null if the move was illegal, the move object if the move was legal
-  }
-
-
-  function makeAMove(move) {
-    const gameCopy = new Chess(game.fen()); // clone game safely
-
-    const result = gameCopy.move(move, { sloppy: true });
-
-    if (result === null) {
-      console.log("Lance inválido")
-      return null;
-    }
-
-    // // Manually set back the turn to the previous player
-    // const newFen = gameCopy.fen().split(' ');
-    // newFen[1] = player; // force the turn back
-    // gameCopy.load(newFen.join(' '));
-    setGame(gameCopy);
-
     if (game.game_over() || game.in_draw()) {
       alert("Jogo acabou")
       return null
     }
-
-    return result;
+    return result; // null if the move was illegal, the move object if the move was legal
   }
 
+
+  // function makeAMove(move) {
+  //   const gameCopy = new Chess(game.fen()); // clone game safely
+  //   const result = gameCopy.move(move);
+  //
+  //   if (result === null) {
+  //     console.log("Lance inválido")
+  //     return null;
+  //   }
+  //
+  //   // // Manually set back the turn to the previous player
+  //   // const newFen = gameCopy.fen().split(' ');
+  //   // newFen[1] = player; // force the turn back
+  //   // gameCopy.load(newFen.join(' '));
+  //   setGame(gameCopy);
+  //
+  //   if (game.game_over() || game.in_draw()) {
+  //     alert("Jogo acabou")
+  //     return null
+  //   }
+  //
+  //   return result;
+  // }
+  //
   // function makeRandomMove() {
   //   const possibleMoves = game.moves();
   //   if (game.game_over() || game.in_draw() || possibleMoves.length === 0)
