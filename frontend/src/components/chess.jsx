@@ -81,8 +81,7 @@ export default function ChessOficial() {
   }
 
 
-  function makeAMove(move, player) {
-    console.log(move, player)
+  function makeAMove(move) {
     const gameCopy = new Chess(game.fen()); // clone game safely
 
     const result = gameCopy.move(move, { sloppy: true });
@@ -125,7 +124,7 @@ export default function ChessOficial() {
       from: sourceSquare,
       to: targetSquare,
       promotion: "q", // always promote to a queen for example simplicity
-    }, player);
+    });
 
     // if illegal move
     if (move === null) return false;
