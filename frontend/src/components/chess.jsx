@@ -6,7 +6,7 @@ const url_back = process.env.REACT_APP_BACKEND_URL
 
 export default function ChessOficial() {
   const [game, setGame] = useState(new Chess());
-  const [turn, setTurn] = useState("");
+  const [turn, setTurn] = useState(false);
   const ws = useRef(null);
 
   useEffect(() => {
@@ -17,10 +17,10 @@ export default function ChessOficial() {
 
     const color = localStorage.getItem("color")
     if (color === "white") {
-      setTurn("w")
+      setTurn(true)
     }
     else if (color === "black") {
-      setTurn("b")
+      setTurn(false)
     }
     else {
       console.log("CHESS: Um erro bizarro ocorreu. Recebi uma cor que não deveria")
@@ -44,8 +44,12 @@ export default function ChessOficial() {
         to: to,
         promotion: promotion,
       }, msg.turn);
+      if (!move) {
+        console.log("ALGO DEU ESQUISITO NO BACK")
+        return
+      }
       console.log(" - Adversario fez o lance", from, to, promotion)
-      setTurn(msg.nextTurn)
+      setTurn(true)
     };
 
     ws.current.onclose = () => {
@@ -68,6 +72,15 @@ export default function ChessOficial() {
     }
   };
 
+
+  function makeAMove(move) {
+    const gameCopy = { ...game };
+    const result = gameCopy.move(move);
+    setGame(gameCopy);
+    return result; // null if the move was illegal, the move object if the move was legal
+  }
+
+
   function makeAMove(move, player) {
     console.log(move, player)
     const gameCopy = new Chess(game.fen()); // clone game safely
@@ -79,10 +92,10 @@ export default function ChessOficial() {
       return null;
     }
 
-    // Manually set back the turn to the previous player
-    const newFen = gameCopy.fen().split(' ');
-    newFen[1] = player; // force the turn back
-    gameCopy.load(newFen.join(' '));
+    // // Manually set back the turn to the previous player
+    // const newFen = gameCopy.fen().split(' ');
+    // newFen[1] = player; // force the turn back
+    // gameCopy.load(newFen.join(' '));
     setGame(gameCopy);
 
     if (game.game_over() || game.in_draw()) {
@@ -102,24 +115,11 @@ export default function ChessOficial() {
   // }
 
   function onDrop(sourceSquare, targetSquare) {
+    if (!turn) {
+      console.log("NAO É Sua Vez")
+      return null
+    }
     console.log("Entrou no ondrop")
-    const color = localStorage.getItem("color")
-    console.log(color, turn)
-    if (!((turn === 'w' && color === "white") || (turn === 'b' && color === "black"))) {
-      console.log("Não é sua vez de jogar")
-      return
-    }
-    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
-      console.log("backend não conectado")
-      return
-    }
-
-    let player = ""
-    if (color === "white") {
-      player = "w"
-    } else if (color === "black") {
-      player = "b"
-    }
 
     const move = makeAMove({
       from: sourceSquare,
@@ -136,7 +136,7 @@ export default function ChessOficial() {
       "promotion": ["q", "r", "b", "n"].sort(() => Math.random() - 0.5)[0],
     }
     sendMessage(data)
-    setTurn("")
+    setTurn(false)
     return true;
   }
 
