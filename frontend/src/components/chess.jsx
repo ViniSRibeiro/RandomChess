@@ -48,6 +48,14 @@ export default function ChessOficial() {
         console.log("ALGO DEU ESQUISITO NO BACK")
         return
       }
+      if (game.game_over()) {
+        alert("O jogo acabou. Você perdeu!!!")
+        return null
+      }
+      if (game.in_draw()) {
+        alert("O jogo empatou")
+        return null
+      }
       console.log(" - Adversario fez o lance", from, to, promotion)
       setTurn(true)
     };
@@ -77,44 +85,8 @@ export default function ChessOficial() {
     const gameCopy = { ...game };
     const result = gameCopy.move(move);
     setGame(gameCopy);
-    if (game.game_over() || game.in_draw()) {
-      alert("Jogo acabou")
-      return null
-    }
     return result; // null if the move was illegal, the move object if the move was legal
   }
-
-
-  // function makeAMove(move) {
-  //   const gameCopy = new Chess(game.fen()); // clone game safely
-  //   const result = gameCopy.move(move);
-  //
-  //   if (result === null) {
-  //     console.log("Lance inválido")
-  //     return null;
-  //   }
-  //
-  //   // // Manually set back the turn to the previous player
-  //   // const newFen = gameCopy.fen().split(' ');
-  //   // newFen[1] = player; // force the turn back
-  //   // gameCopy.load(newFen.join(' '));
-  //   setGame(gameCopy);
-  //
-  //   if (game.game_over() || game.in_draw()) {
-  //     alert("Jogo acabou")
-  //     return null
-  //   }
-  //
-  //   return result;
-  // }
-  //
-  // function makeRandomMove() {
-  //   const possibleMoves = game.moves();
-  //   if (game.game_over() || game.in_draw() || possibleMoves.length === 0)
-  //     return; // exit if the game is over
-  //   const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-  //   makeAMove(possibleMoves[randomIndex]);
-  // }
 
   function onDrop(sourceSquare, targetSquare) {
     if (!turn) {
@@ -136,6 +108,15 @@ export default function ChessOficial() {
       "from": sourceSquare,
       "to": targetSquare,
       "promotion": ["q", "r", "b", "n"].sort(() => Math.random() - 0.5)[0],
+    }
+
+    if (game.game_over()) {
+      alert("O jogo acabou. Você perdeu!!!")
+      return null
+    }
+    if (game.in_draw()) {
+      alert("O jogo empatou")
+      return null
     }
     sendMessage(data)
     setTurn(false)
