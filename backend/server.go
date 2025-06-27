@@ -163,7 +163,7 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 	log.Printf("fila de espera antes: %v", s.waitingForGame)
 	otherToken := s.waitingForGame[0]
 	// clear(s.waitingForGame)
-	s.waitingForGame = s.waitingForGame[1:]
+	s.waitingForGame = make([]string, 0)
 	log.Printf("fila de espera depois: %v", s.waitingForGame)
 
 	gameId := len(s.games)
