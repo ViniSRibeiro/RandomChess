@@ -109,17 +109,17 @@ export default function ChessOficial() {
       "to": targetSquare,
       "promotion": "q",
     }
+    sendMessage(data)
+    setTurn(false)
 
     if (game.game_over()) {
-      alert("O jogo acabou. Você perdeu!!!")
+      alert("O jogo acabou. Você ganhou!!!")
       return null
     }
     if (game.in_draw()) {
       alert("O jogo empatou")
       return null
     }
-    sendMessage(data)
-    setTurn(false)
     return true;
   }
 
