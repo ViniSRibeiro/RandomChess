@@ -1,0 +1,17 @@
+.values {
+  mask-image: linear-gradient(to bottom, black 0%, black 30%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 30%,  transparent 100%);
+
+  width: 30%;
+  height: 50%;
+  resize: both;
+  overflow-y: scroll;
+}
+
+.pos {
+  color: #52b97d;
+}
+
+.neg {
+  color: red;
+}

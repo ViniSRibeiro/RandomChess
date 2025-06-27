@@ -3,13 +3,16 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"math/rand/v2"
 	"net/http"
 	"os"
+	"slices"
+	"time"
 
-	"github.com/corentings/chess/v2"
+	"github.com/gorilla/websocket"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -26,7 +29,7 @@ type Server struct {
 	userTokens     map[string]string   // chaves são nomes de usuário
 	waitingForGame []string            // fila de usuários aguardando jogo
 	randomness     randomness
-	games          []*chess.Game
+	games          []*GameState
 }
 
 func initServer() Server {
@@ -34,8 +37,8 @@ func initServer() Server {
 		db:         initDB(),
 		sessions:   make(map[string]*Session),
 		userTokens: make(map[string]string),
-		randomness: RD_bitcoin,
-		games:      make([]*chess.Game, 0),
+		randomness: RD_standart,
+		games:      make([]*GameState, 0),
 	}
 }
 
@@ -73,6 +76,13 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, jsonMsg("Metodo não permitido"), http.StatusMethodNotAllowed)
 	}
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("Upgrade failed:", err)
+		return
+	}
+	defer conn.Close()
+
 	var valor float64
 	switch s.randomness {
 	case RD_bitcoin:
@@ -80,53 +90,116 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 	case RD_standart:
 		valor = rand.Float64()
 	}
-	w.Write(jsonRandom(valor))
+
+	var variacao float64
+	valor_antigo := valor
+	for {
+		time.Sleep(1 * time.Second)
+		switch s.randomness {
+		case RD_bitcoin:
+			valor = getBtcData()
+		case RD_standart:
+			valor = (rand.Float64() - 0.5) * 10
+		}
+		variacao = valor - valor_antigo
+		valor_antigo = valor
+		if err := conn.WriteMessage(websocket.TextMessage, jsonRandom(variacao)); err != nil {
+			conn.Close()
+		}
+	}
 }
 
 func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
+	log.Println("Pedido de conexão chegou")
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
-
 	if r.Method != http.MethodGet {
 		http.Error(w, jsonMsg("Metodo não permitido"), http.StatusMethodNotAllowed)
 	}
 	// Antes de mais nada, validamos o pedido recebido
-	headers := r.Header
-	token := headers.Get("Authorization")
-	if token != "" {
+	token := getToken(r)
+	if token == "" {
 		http.Error(w, jsonMsg("Faltou o campo Authorization"), http.StatusBadRequest)
 		return
 	}
+	log.Println(token)
 	_, validToken := s.sessions[token]
 	if !validToken {
 		http.Error(w, jsonMsg("Token inválido"), http.StatusBadRequest)
 		return
 	}
-
-	// Verificamos se já existe alguém na fila. Se já existir, podemos
-	// simplesmente montar o novo jogo entre essas duas pessoas
-	// Adicionamos o usuário na fila, caso não haja mais ninguém na fila
-	// esperando por um jogo
-	if len(s.waitingForGame) == 0 {
-		s.waitingForGame = append(s.waitingForGame, token)
-		w.WriteHeader(http.StatusOK)
+	// Atualizamos a conexão para websocket
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("Erro no upgrade para websocket em esperaJogo: %v", err)
 		return
 	}
+	defer conn.Close()
+	// Se não há ninguém na fila, esperamos
+	if slices.Contains(s.waitingForGame, token) {
+		return
+	}
+	if len(s.waitingForGame) == 0 {
+		s.waitingForGame = append(s.waitingForGame, token)
+		// Enquanto não aparece outra pessoa, comunicamos que não há ninguém
+		for s.sessions[token].gameId < 0 {
+			conn.WriteJSON(map[string]string{
+				"encontrou": "N",
+				"mensagem":  "Aguardando oponente...",
+			})
+			log.Printf("Aguardando para o token %s\n", token)
+			time.Sleep(2 * time.Second)
+		}
+		conn.WriteJSON(map[string]string{
+			"encontrou": "S",
+			"partida":   fmt.Sprint(s.sessions[token].gameId),
+			"color":     "white", // podia ser sorteado. Que pena!
+		})
+		return
+	}
+	log.Printf("fila de espera antes: %v", s.waitingForGame)
 	otherToken := s.waitingForGame[0]
+	// clear(s.waitingForGame)
 	s.waitingForGame = s.waitingForGame[1:]
+	log.Printf("fila de espera depois: %v", s.waitingForGame)
 
 	gameId := len(s.games)
-	s.games = append(s.games, chess.NewGame())
+	s.games = append(s.games, InitGameState(otherToken, token))
+	// Registramos uma nova rota para a nova partida
+	routeName := fmt.Sprintf("/partida/%d", gameId)
+	http.HandleFunc(routeName, s.partida(gameId))
 
 	s.sessions[token].gameId = gameId
 	s.sessions[otherToken].gameId = gameId
-	w.WriteHeader(http.StatusOK)
+
+	log.Printf("sessões: %v", s.sessions)
+
+	conn.WriteJSON(map[string]string{
+		"encontrou": "S",
+		"partida":   fmt.Sprint(s.sessions[token].gameId),
+		"color":     "black", // podia ser sorteado
+	})
+	log.Printf("Criada a partida %d com os usuários de token %s e %s",
+		gameId, s.sessions[token].nome, s.sessions[otherToken].nome)
+
 }
 
 // -----------------------------------------------------------------------------
+
+func getToken(r *http.Request) string {
+	contents, hasAuth := r.Header["Authorization"]
+	if hasAuth {
+		return contents[0]
+	}
+	contents, hasAuth = r.Header["Sec-Websocket-Protocol"]
+	if hasAuth {
+		return contents[0]
+	}
+	return ""
+}
 
 func ok(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
@@ -165,7 +238,16 @@ func jsonToken(msg string) []byte {
 }
 
 func jsonRandom(num float64) []byte {
-	data := map[string]float64{"token": num}
+	data := map[string]float64{"valor": num}
+	res, _ := json.Marshal(data)
+	return res
+}
+
+func jsonChat(msg string, user string) []byte {
+	data := map[string]string{
+		"mensagem": msg,
+		"usuario":  user,
+	}
 	res, _ := json.Marshal(data)
 	return res
 }

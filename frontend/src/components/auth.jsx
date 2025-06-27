@@ -1,7 +1,8 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState, useEffect } from 'react'
 import { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+const url_back = process.env.REACT_APP_BACKEND_URL
 
 const AuthContext = createContext({})
 
@@ -15,9 +16,16 @@ export const AuthProvider = ({ children }) => {
     navigate('/')
   };
 
+  useEffect(() => {
+    if (localStorage.getItem("token") !== null) {
+      setIsLogged(true)
+    }
+  }, [])
+
+
   const cadastro = (data) => {
     console.log(data)
-    fetch("http://localhost:8080/cadastro", {
+    fetch("http://" + url_back + "/cadastro", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -51,13 +59,12 @@ export const AuthProvider = ({ children }) => {
       .catch((error) => {
         alert("um erro inesperado ocorreu ao cadastrar o professor");
         console.log("cadastro.jsx >>> ", error)
-        throw new error
       })
   }
 
   const login = (data) => {
     console.log(data)
-    fetch("http://localhost:8080/login", {
+    fetch("http://" + url_back + "/login", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -94,9 +101,8 @@ export const AuthProvider = ({ children }) => {
         navigate('/partida')
       })
       .catch((error) => {
-        alert("um erro inesperado ocorreu ao cadastrar o professor");
+        alert("um erro inesperado ocorreu ao fazer o login");
         console.log("login.jsx >>> ", error)
-        throw new error
       })
   }
   return (

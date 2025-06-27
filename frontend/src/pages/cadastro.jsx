@@ -8,9 +8,16 @@ const Cadastro = () => {
   const { cadastro } = useAuth()
   const [nome, setNome] = useState("")
   const [senha, setSenha] = useState("")
+  const [senhaRepetida, setSenhaRepetida] = useState("")
 
   const submit = (e) => {
     e.preventDefault()
+
+    if (senha !== senhaRepetida) {
+      alert("ATENÇÃO: As senhas devem ser iguais")
+      return
+    }
+
     const data = {
       "nome": nome,
       "senha": senha
@@ -27,6 +34,8 @@ const Cadastro = () => {
         <input type="text" value={nome} onChange={(e) => { setNome(e.target.value) }} required ></input>
         <h2>Digite sua senha</h2>
         <input type="password" value={senha} onChange={(e) => { setSenha(e.target.value) }} required ></input>
+        <h2>Repita sua senha</h2>
+        <input type="password" value={senhaRepetida} onChange={(e) => { setSenhaRepetida(e.target.value) }} required ></input>
         <input className={styles.submit} type="submit" value="Cadastrar" />
       </form>
       <div className={styles.spacer}></div>

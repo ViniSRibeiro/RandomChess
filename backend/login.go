@@ -42,6 +42,7 @@ func (s *Server) cadastro(w http.ResponseWriter, r *http.Request) {
 
 	// O usuário já existe? Retornamos um código de erro nesse caso
 	rows, _ := s.db.Query("SELECT nome FROM Usuario WHERE nome = ?", userData.Nome)
+	defer rows.Close()
 	if rows.Next() {
 		// Usuário já existe no banco de dados (erro: 409)
 		msg := fmt.Sprintf("Usuário %s já existe", userData.Nome)
