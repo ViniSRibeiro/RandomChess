@@ -42,7 +42,7 @@ export default function ChessOficial() {
       const move = makeAMove({
         from: from,
         to: to,
-        promotion: promotion,
+        promotion: "q",
       });
       if (!move) {
         console.log("ALGO DEU ESQUISITO NO BACK")
@@ -107,7 +107,7 @@ export default function ChessOficial() {
     const data = {
       "from": sourceSquare,
       "to": targetSquare,
-      "promotion": ["q", "r", "b", "n"].sort(() => Math.random() - 0.5)[0],
+      "promotion": "q",
     }
 
     if (game.game_over()) {
