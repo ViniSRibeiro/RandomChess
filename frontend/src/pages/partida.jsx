@@ -11,63 +11,17 @@ const Partida = () => {
 
   const navigate = useNavigate()
 
-  useEffect(() => {
+  const click = () => {
+    localStorage.setItem("color", Math.random() < 0.5 ? "white" : "black")
     // Connect to WebSocket server
-    const token = localStorage.getItem("token")
-    console.log(token)
-    ws.current = new WebSocket("ws://" + url_back + "/esperaJogo", token);
+    alert("Sua partida foi encontrada")
+    navigate('/jogo')
+  }
 
-
-    ws.current.onmessage = (event) => {
-      let data = event.data;
-      data = JSON.parse(data)
-      console.log(data)
-      let msg = data.mensagem;
-
-      if (data.hasOwnProperty('encontrou')) {
-        let encontrou = data.encontrou;
-        if (encontrou === "S") {
-          // Caso tudo tenha dado certo
-          localStorage.setItem("partida", data.partida)
-          localStorage.setItem("color", data.color)
-          alert("Sua partida foi encontrada")
-          navigate('/jogo')
-        }
-      }
-      return
-    };
-
-    ws.current.onclose = () => {
-      console.log("WebSocket closed");
-    };
-
-    return () => {
-      ws.current.close();
-    };
-
-  }, []);
-
-  const sendMessage = () => {
-    setSearching(true)
-    const token = localStorage.getItem("token")
-    console.log("iniciou")
-    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      const data = {
-        method: 'GET',
-        headers: {
-          'Authorization': token,
-          alg: 'HS256',
-          typ: 'JWT',
-        }
-      }
-      console.log(data)
-      ws.current.send(data);
-    }
-  };
 
   return (
     <div className={styles.container}>
-      <h1>Pesquisando por sua partida </h1>
+      <h1 onClick={click}>Pesquisando por sua partida </h1>
       <Loading />
       <p>Aguardando oponente</p>
     </div>
