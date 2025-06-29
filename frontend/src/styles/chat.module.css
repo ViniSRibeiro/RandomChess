@@ -1,6 +1,7 @@
 .container {
   height: 300px;              /* Fixed height for the whole chat box */
   border: 1px solid #ccc;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   padding: 10px;
@@ -22,8 +23,17 @@
 input {
   padding: 5px;
   margin-bottom: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: calc(100% - 12px); /* Full width minus padding and border
+    */
 }
 
 button {
   padding: 5px;
+  background-color: #52b97d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }

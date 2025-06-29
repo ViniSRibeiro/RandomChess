@@ -13,9 +13,14 @@ function Jogo() {
       <div className={styles.board_box}>
         <ChessOficial />
       </div>
-      <div className={styles.bitcoin}>
-        <BitcoinMonitor />
-        <Chat />
+      <div className={styles.graph_chat_container}>
+        <div className={styles.bitcoin}>
+          <BitcoinMonitor />
+        </div>
+        <div className={styles.chat}>
+          <Chat />
+        </div>    
+
       </div>
     </div>
   );
