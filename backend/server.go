@@ -94,7 +94,7 @@ func (s *Server) random(w http.ResponseWriter, r *http.Request) {
 	var variacao float64
 	valor_antigo := valor
 	for {
-		time.Sleep(1 * time.Second)
+		time.Sleep(500 * time.Millisecond)
 		switch s.randomness {
 		case RD_bitcoin:
 			valor = getBtcData()
