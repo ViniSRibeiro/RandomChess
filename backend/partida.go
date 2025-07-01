@@ -66,7 +66,8 @@ func (s *Server) partida(gameId int) HttpFunc {
 		session := s.sessions[token]
 		nome := session.nome
 		gameState := s.games[gameId]
-		for gameState.game.Outcome() == chess.NoOutcome {
+		i := 0
+		for i < 2 {
 			currentPlayer := gameState.players[gameState.turn]
 			if token == currentPlayer {
 				log.Printf("Vez do jogador: %v\n", nome)
@@ -117,7 +118,18 @@ func (s *Server) partida(gameId int) HttpFunc {
 				time.Sleep(200 * time.Millisecond)
 			}
 			log.Println("vira turno")
+			if gameState.game.Outcome() != chess.NoOutcome {
+				i += 1
+			}
 		}
+		s.sessions[token].gameId = -1
+		var otherToken string
+		if gameState.players["w"] == token {
+			otherToken = gameState.players["b"]
+		} else {
+			otherToken = gameState.players["b"]
+		}
+		s.sessions[otherToken].gameId = -1
 	}
 }
 

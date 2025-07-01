@@ -40,11 +40,12 @@ const BitcoinMonitor = () => {
   }, []);
 
   return (
-    <div>
+    <div className={styles.container}>
       <div className={styles.chart_box}>
         <ChartComponent numbers={bitcoinI} />
       </div>
-      <div className={styles.values}>
+      <div className={styles.values_box}>
+              <div className={styles.values}>
         {bitcoin.map((num, idx) => (
           <p
             key={idx}
@@ -53,6 +54,7 @@ const BitcoinMonitor = () => {
             {num >= 0 ? `+${num.toFixed(3)}` : num.toFixed(3)}
           </p>
         ))}
+      </div>
       </div>
     </div>
   )
