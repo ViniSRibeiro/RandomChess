@@ -158,6 +158,7 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 			"partida":   fmt.Sprint(s.sessions[token].gameId),
 			"color":     "white", // podia ser sorteado. Que pena!
 		})
+		conn.Close()
 		return
 	}
 	log.Printf("fila de espera antes: %v", s.waitingForGame)
@@ -184,7 +185,7 @@ func (s *Server) esperaJogo(w http.ResponseWriter, r *http.Request) {
 	})
 	log.Printf("Criada a partida %d com os usuários de token %s e %s",
 		gameId, s.sessions[token].nome, s.sessions[otherToken].nome)
-
+	conn.Close()
 }
 
 // -----------------------------------------------------------------------------

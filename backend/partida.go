@@ -66,6 +66,7 @@ func (s *Server) partida(gameId int) HttpFunc {
 		session := s.sessions[token]
 		nome := session.nome
 		gameState := s.games[gameId]
+		s.sessions[token].gameId = 0
 		i := 0
 		for i < 2 {
 			currentPlayer := gameState.players[gameState.turn]
@@ -76,6 +77,8 @@ func (s *Server) partida(gameId int) HttpFunc {
 				if err := conn.ReadJSON(&move); err != nil {
 					log.Printf("Ocorreu um erro na comunicação de partida com %s\n", nome)
 					log.Printf("[ ! ] Erro: %v\n", err)
+					conn.Close()
+					gameState.madeMove = true
 					return
 				}
 				gameState.sincMove = false
@@ -96,6 +99,10 @@ func (s *Server) partida(gameId int) HttpFunc {
 					// 	"mensagem": "Aguardando oponente...",
 					// })
 					time.Sleep(200 * time.Millisecond)
+				}
+				if gameState.endGame {
+					conn.Close()
+					return
 				}
 				// Notificamos o trem do movimento feito
 				serverMove := fromClientMove(gameState.lastMove, gameState.turn)

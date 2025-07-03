@@ -8,6 +8,7 @@ type GameState struct {
 	turn     string
 	madeMove bool
 	sincMove bool
+	endGame  bool
 	lastMove ClientMove
 }
 
@@ -21,5 +22,6 @@ func InitGameState(whitePlayer, blackPlayer string) *GameState {
 		turn:     "w",
 		madeMove: false,
 		sincMove: false,
+		endGame:  false,
 	}
 }
